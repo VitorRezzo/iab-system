@@ -9,42 +9,33 @@ function CadUser() {
 
     let navigate = useNavigate();
 
-
-        
-  
-
-
-    const Cadastrar = async (e)=>{
-       await axios.post("http://127.0.0.1:3010/api/cadastrouser",{nome: e.target.usuario.value,senha:e.target.senha.value})
-    }
-    
-    const Submit =  (e) =>{ 
+    const Cadastrar = async (e) =>{ 
         e.preventDefault();
-        try{
-            Cadastrar(e);
-            alert("Deu certo")
-        }catch(error){
-            console.log(error)
-        }
+        
+            await axios.post("http://127.0.0.1:3010/api/CadastraUsuario",{nome: e.target.usuario.value,senha:e.target.senha.value})
+            .then(()=>{
+                alert("Usuario cadastrado com sucesso!")
+            })           
     }
 
   return (
 
     <Container component="div" sx={{ justifyContent:"center",display:"flex", flexDirection:"column",alignItems:"center",minHeight: "100vh"
     }}>
+        
         <Box component="div"  sx={{display:"flex",flexDirection:"row", minHeight:"400px", background:"gray",}}>
             <Box component="div">
           
                 <img  src={IMGBrunno} alt="logo IAB" width="300" height="300"/>
         
            </Box>
-        
-           <Box component="form" onSubmit={Submit}   sx={{ display:"flex", flexDirection:"column"}}>
+           <Button variant="contained" onClick={() => navigate("/")} >Voltar</Button>
+           <Box component="form" onSubmit={Cadastrar}   sx={{ display:"flex", flexDirection:"column"}}>
                <TextField type="text"     name="usuario"  label="Usuario"  variant="outlined" />
                <TextField type="password" name="senha"    label="Senha" variant="outlined" />
                <Button variant="contained" type="submit"   >Cadastrar</Button>
             </Box>
-            <Button variant="contained" onClick={() => navigate("/")} >Voltar</Button>
+            
         </Box>
        
  

@@ -27,7 +27,7 @@ const  LoginAuten = async (local)=>{
   await ApiServer.get('/LoginUsuario').then(response=>{
   
    if(response.data.nome){
-    Cookies.set("IABtoken",response.data.token)
+    Cookies.set(process.env.REACT_APP_TOKEN,response.data.token)
     localStorage.setItem("auth",response.data.auth);
     setUserLog(response.data.nome)
     switch(local){
@@ -52,13 +52,13 @@ const  LoginAuten = async (local)=>{
 
 useEffect(()=>{
      
-  const token = Cookies.get("IABtoken");
+  const token = Cookies.get(process.env.REACT_APP_TOKEN);
 
     ApiServer.get('/AutenticaUser',{
       headers: {"x-acess-token":token},
     }).then(response=>{
       if(!response.data.auth){
-        Cookies.remove("IABtoken");
+        Cookies.remove(process.env.REACT_APP_TOKEN);
       }
       localStorage.setItem("auth",response.data.auth);
     })

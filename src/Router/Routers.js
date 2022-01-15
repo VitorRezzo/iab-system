@@ -6,7 +6,7 @@ import Estoque from "../pages/estoque/Estoque.js";
 import {
   Routes,
   Route,
-Navigate
+  Navigate
 } from "react-router-dom";
 
 

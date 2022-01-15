@@ -3,7 +3,7 @@ import axios from "axios";
 
 
      const ApiServer = axios.create({
-            baseURL: 'http://192.168.100.8:3010/api',     
+            baseURL: process.env.REACT_APP_API_BACKEND,     
           });
   
 export default ApiServer;

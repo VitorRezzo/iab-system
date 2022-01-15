@@ -1,10 +1,20 @@
 import React from "react";
-import Routers from "./Router/Routers" 
+import Routers from "./Router/Routers"
+import { AutenticaUserProvider } from "./components/AutenticaUser";
+
+import {
+  BrowserRouter,
+
+} from "react-router-dom";
+
 function App() {
   return (
-  
-    <Routers/>
-
+    <BrowserRouter>
+       <AutenticaUserProvider>
+          <Routers/>
+       </AutenticaUserProvider>
+   </BrowserRouter>
+     
     );
 }
 

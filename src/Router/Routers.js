@@ -1,28 +1,40 @@
 import React from "react";
 import Login from "../pages/login/Login.js";
 import CadUser from "../pages/cadUser/CadUser.js";
-import Home from "../pages/home/Home.js";
-
+import Recepcao from "../pages/recepcao/Recepcao.js";
+import Estoque from "../pages/estoque/Estoque.js";
 import {
-  BrowserRouter,
   Routes,
   Route,
-
+Navigate
 } from "react-router-dom";
 
 
+
+
 export default function Routers() {
+  
+ 
+  
+  const RotasPrivada = ({children}) =>{
+    const auth = localStorage.getItem("auth");
+    console.log(auth)
+    return auth === "true" ? children   : <Navigate to="/" />  ;
+  } 
     return (
-      < BrowserRouter>
+      
       <Routes>
+        
             <Route exact path="/" element={<Login/>}/>
-            
-            <Route path="/CadUser" element={<CadUser/>}/>
-                 
-            <Route path="/Home" element={<Home/>}>
-            
-            </Route>    
+            <Route path="/CadUser"  element={<CadUser/>}/>
+            <Route path="/Recepcao" element={<RotasPrivada><Recepcao/></RotasPrivada>}/>
+            <Route path="/Estoque" element={<RotasPrivada><Estoque/></RotasPrivada>}/>
       </Routes>
-      </ BrowserRouter>
+      
+       
+  
     );
+
+
+
   }

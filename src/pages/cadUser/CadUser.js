@@ -1,9 +1,8 @@
 import React from "react";
 import {Container, Box,TextField,Button}  from "@mui/material";
 import IMGBrunno from "../../img/IMGBrunno.jpg"
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
-
+import ApiServer from "../../config/ApiServer.js";
 
 function CadUser() {
 
@@ -12,7 +11,7 @@ function CadUser() {
     const Cadastrar = async (e) =>{ 
         e.preventDefault();
         
-            await axios.post("http://127.0.0.1:3010/api/CadastraUsuario",{nome: e.target.usuario.value,senha:e.target.senha.value})
+            await ApiServer.post("/CadastraUsuario",{nome: e.target.usuario.value,senha:e.target.senha.value})
             .then(()=>{
                 alert("Usuario cadastrado com sucesso!")
             })           

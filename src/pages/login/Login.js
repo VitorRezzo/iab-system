@@ -1,33 +1,40 @@
-import React from "react";
-import {Box,Container, TextField,Button}  from "@mui/material"; 
-import {Link,useNavigate} from "react-router-dom";
-import IMGBrunno from "../../img/IMGBrunno.jpg"
-import axios from "axios";
+import React,{useEffect} from "react";
+import {Box,Container, TextField,Button,Autocomplete}  from "@mui/material"; 
+import {Link} from "react-router-dom";
+import IMGBrunno from "../../img/IMGBrunno.jpg";
+import ApiServer from "../../config/ApiServer.js";
+import {useAutenticaUser} from "../../components/AutenticaUser";
+
+
 
 function Login() {
-  let navigate = useNavigate();
 
+  const nameModulos =[{label:"Recepção IAB"},{label:"Estoque IAB"}]
+  let {LoginAuten}   = useAutenticaUser();
+  
 
-  const PostLogin = async (e) =>{
-    await axios.post("http://127.0.0.1:3010/api/LogUsuario",{nome: e.target.usuario.value,senha:e.target.senha.value})
-  }
+ 
+    const PostUser = async (e) => {
+      
+      ApiServer.post('/PostUsuario',{nome: e.target.usuario.value,senha:e.target.senha.value}).then(req=>{alert(req+"jaenvei")})
+      
+    }
 
-  const Acessar = async (e) =>{
-    e.preventDefault();
-      PostLogin(e);    
-      await axios.get("http://127.0.0.1:3010/api/AutenticaUsuario").then(response=>{
-        if(response.data.nome === e.target.usuario.value && response.data.senha === e.target.senha.value  ){
-            navigate('/Home');
-        }else{
-          alert("Usuario ou senha incorreto!")
-        }  
-      })
+  const Acessar = (e) =>{
+   e.preventDefault();
+    if(e.target.usuario.value !== "" && e.target.senha.value !== ""  ){
+      PostUser(e);
+      LoginAuten(e.target.modulo.value); 
+    }else{
+      alert("Digite usuario e senha!")
+    }
     
-  }
+  }   
+  
     
 
   return (
-
+    
     <Container component="div" sx={{ justifyContent:"center",display:"flex", flexDirection:"column",alignItems:"center",minHeight: "100vh"
   }}>
       <Box component="div"  sx={{display:"flex",flexDirection:"row", minHeight:"400px", background:"gray",}}>
@@ -40,7 +47,14 @@ function Login() {
          <Box component="form" onSubmit={Acessar}   sx={{ display:"flex", flexDirection:"column"}}>
              <TextField type="text"     name="usuario"  label="Usuario"  variant="outlined" />
              <TextField type="password" name="senha"    label="Senha" variant="outlined" />
-             <Button variant="contained" type="submit"   >Acessar</Button>
+             <Autocomplete
+                disablePortal
+                options={nameModulos}
+                
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} name="modulo" label="Modulos" />}
+                />
+             <Button variant="contained" type="submit">Acessar</Button>
              <Link to="/CadUser">Criar Conta</Link>
           </Box>
          
@@ -48,7 +62,7 @@ function Login() {
      
 
   </Container>
-  
+
     );
 }
 

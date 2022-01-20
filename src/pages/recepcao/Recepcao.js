@@ -1,11 +1,16 @@
 import React from "react";
 import {Container}  from "@mui/material";
-import {useAutenticaUser} from "../../components/AutenticaUser";
+import {useAutenticaUser} from "../../store/AutenticaUser";
+
 
 
 function Recepcao() {
+  
+  
+  
   let {userLog}   = useAutenticaUser();
   
+
   return (
 
     <Container component="div" sx={{ justifyContent:"center",display:"flex", flexDirection:"column",alignItems:"center",minHeight: "100vh"

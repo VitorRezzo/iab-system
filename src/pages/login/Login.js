@@ -1,34 +1,44 @@
-import React,{useEffect} from "react";
+import React from "react";
 import {Box,Container, TextField,Button,Autocomplete}  from "@mui/material"; 
-import {Link} from "react-router-dom";
-import IMGBrunno from "../../img/IMGBrunno.jpg";
-import ApiServer from "../../config/ApiServer.js";
-import {useAutenticaUser} from "../../components/AutenticaUser";
-
+import IABLogin from "../../assets/img/IABLogin.jpg";
+import ApiServer from "../../services/ApiServer.js";
+import {useAutenticaUser} from "../../store/AutenticaUser";
+import { useNavigate } from "react-router-dom";
 
 
 function Login() {
 
   const nameModulos =[{label:"Recepção IAB"},{label:"Estoque IAB"}]
-  let {LoginAuten}   = useAutenticaUser();
-  
+  const  {LoginAuten}   = useAutenticaUser();
+  const navigate = useNavigate();
 
+  
  
     const PostUser = async (e) => {
-      
       ApiServer.post('/PostUsuario',{nome: e.target.usuario.value,senha:e.target.senha.value}).then(req=>{alert(req+"jaenvei")})
-      
     }
 
-  const Acessar = (e) =>{
+    const Modulo = (local) => {
+      switch(local){
+        case "Recepção IAB":
+          navigate("/Recepcao")
+        break;
+        case "Estoque IAB":
+          navigate('/Estoque')
+        break;
+        default:
+          navigate('/')
+          break;
+     }
+    } 
+
+  const Acessar = async (e) =>{
    e.preventDefault();
-    if(e.target.usuario.value !== "" && e.target.senha.value !== ""  ){
+
       PostUser(e);
-      LoginAuten(e.target.modulo.value); 
-    }else{
-      alert("Digite usuario e senha!")
-    }
-    
+await LoginAuten();
+      Modulo(e.target.modulo.value); 
+
   }   
   
     
@@ -37,25 +47,24 @@ function Login() {
     
     <Container component="div" sx={{ justifyContent:"center",display:"flex", flexDirection:"column",alignItems:"center",minHeight: "100vh"
   }}>
-      <Box component="div"  sx={{display:"flex",flexDirection:"row", minHeight:"400px", background:"gray",}}>
+      <Box component="div"  sx={{display:"flex",flexDirection:"row", minHeight:"400px", background:"#D9D9D9",}}>
           <Box component="div">
         
-              <img  src={IMGBrunno} alt="logo IAB" width="300" height="300"/>
+              <img  src={IABLogin} alt="imagem IAB no login" width="300" height="300"/>
       
          </Box>
       
          <Box component="form" onSubmit={Acessar}   sx={{ display:"flex", flexDirection:"column"}}>
-             <TextField type="text"     name="usuario"  label="Usuario"  variant="outlined" />
-             <TextField type="password" name="senha"    label="Senha" variant="outlined" />
+             <TextField type="text"     name="usuario"  label="Usuario" variant="outlined" required={true} />
+             <TextField type="password" name="senha"    label="Senha"   variant="outlined" required={true}/>
              <Autocomplete
                 disablePortal
                 options={nameModulos}
-                
                 sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} name="modulo" label="Modulos" />}
+                renderInput={(params) => <TextField {...params} name="modulo" label="Modulos" required={true}/>}
                 />
              <Button variant="contained" type="submit">Acessar</Button>
-             <Link to="/CadUser">Criar Conta</Link>
+            
           </Box>
          
       </Box>

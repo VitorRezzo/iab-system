@@ -27,10 +27,10 @@ export default function Routers() {
             <Routes>
               <Route exact path="/" element={<Login/>}/>
               <Route exact path="/Recepcao" element= {<PrivateRouters><Recepcao/></PrivateRouters> }/>
-              <Route exact path="/Estoque" element={<Estoque/>}/>
-              <Route exact path="/CadUser"  element={<CadUser/>}/>
+              <Route exact path="/Estoque" element={<PrivateRouters><Estoque/></PrivateRouters>}/>
+              <Route exact path="/CadUser"  element={<PrivateRouters><CadUser/></PrivateRouters>}/>
       
-              
+              <Route exact path="*"  element={<h1>pagina com erro</h1>}/>
             </Routes>
  
 

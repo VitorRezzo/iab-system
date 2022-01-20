@@ -4,6 +4,7 @@ import {
   } from "react-router-dom";
 
 
+
    
 
     export const PrivateRouters = ({children}) => {
@@ -12,14 +13,17 @@ import {
     
     let auth = localStorage.getItem("--auth");
       
-    if(auth === "true"){ 
-      return children;  
+     
+    if(auth === "false" && !userLog){
+      return  <Navigate to="/"/>
      }
 
-    if(auth === "false" || !userLog){
-     return  <Navigate to="/"/>
+    if( auth === "true"){
+
+      return children
+     
     }
 
-    
+
     
   }

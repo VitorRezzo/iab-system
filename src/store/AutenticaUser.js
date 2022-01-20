@@ -14,10 +14,7 @@ export function AutenticaUserProvider({ children }) {
  
 
 const [userLog,setUserLog] = useState(null);  
-
   
-  
-
 
 
 
@@ -41,18 +38,17 @@ const VerificaAutentica = async () => {
   await ApiServer.get('/AutenticaUser',{ 
     headers: {"x-acess-token":Cookies.get(process.env.REACT_APP_TOKEN)},
   }).then(response=>{
-   
+    
     if(response.data.auth === false){
       Cookies.remove(process.env.REACT_APP_TOKEN);
       localStorage.setItem("--auth",response.data.auth)
       
     }
-  
+    
     setUserLog(response.data.nome);
     
 
   })
-
  
 };
 
@@ -65,7 +61,7 @@ useEffect( ()=>{
   const value = {
     LoginAuten,
     userLog,
-  
+ 
   };
 
   return (

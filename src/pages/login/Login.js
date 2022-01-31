@@ -8,22 +8,23 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
 
-  const nameModulos =[{label:"Recepção IAB"},{label:"Estoque IAB"}]
+  const nameModulos =[{label:"Acolhimento IAB"},{label:"Estoque IAB"}]
   const  {LoginAuten}   = useAutenticaUser();
   const navigate = useNavigate();
 
   
  
     const PostUser = async (e) => {
-      ApiServer.post('/PostUsuario',{nome: e.target.usuario.value,senha:e.target.senha.value}).then(req=>{alert(req+"jaenvei")})
+      ApiServer.post('/PostUsuario',{nome: e.target.usuario.value,senha:e.target.senha.value})
+      .then(req=>{console.log(req)})
     }
 
     const Modulo = (local) => {
       switch(local){
-        case "Recepção IAB":
-          navigate("/Recepcao")
+        case nameModulos[0].label:
+          navigate("/Acolhimento")
         break;
-        case "Estoque IAB":
+        case nameModulos[1].label:
           navigate('/Estoque')
         break;
         default:

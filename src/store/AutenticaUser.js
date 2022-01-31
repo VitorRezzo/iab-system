@@ -40,15 +40,15 @@ const VerificaAutentica = async () => {
   }).then(response=>{
     
     if(response.data.auth === false){
-      Cookies.remove(process.env.REACT_APP_TOKEN);
+      Cookies.remove(process.env.REACT_APP_TOKEN)
       localStorage.setItem("--auth",response.data.auth)
-      
     }
+    setUserLog(response.data.nome)
     
-    setUserLog(response.data.nome);
     
-
+    
   })
+
  
 };
 
@@ -61,6 +61,7 @@ useEffect( ()=>{
   const value = {
     LoginAuten,
     userLog,
+    VerificaAutentica,
  
   };
 

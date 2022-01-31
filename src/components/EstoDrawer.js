@@ -27,12 +27,11 @@ const drawerWidth = 240;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: `-${drawerWidth}px`,
+    marginLeft: `-${drawerWidth-200}px`,
     ...(open && {
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
@@ -42,6 +41,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
   }),
 );
+
+
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -68,7 +69,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-export default function Acolhimento() {
+export default function Esto_Drawer() {
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -123,7 +124,6 @@ export default function Acolhimento() {
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
-          
         </DrawerHeader>
         <Divider />
         <List >
@@ -146,13 +146,9 @@ export default function Acolhimento() {
        
       </Drawer>
       <Main open={open}>
-     
-        <Typography paragraph>
-         
-        </Typography>
-        <Typography paragraph>
-     
-        </Typography>
+          
+          
+        
       </Main>
     </Box>
   );

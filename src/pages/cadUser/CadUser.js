@@ -1,29 +1,30 @@
 import React from "react";
 import {Container, Box,TextField,Button}  from "@mui/material";
-import {useNavigate} from "react-router-dom";
 import ApiServer from "../../services/ApiServer.js";
+import Cookies from 'js-cookie';
 
-function CadUser() {
-
-    let navigate = useNavigate();
+    function CadUser() {
 
     const Cadastrar = async (e) =>{ 
         e.preventDefault();
-        
-            await ApiServer.post("/CadastraUsuario",{nome: e.target.usuario.value,senha:e.target.senha.value})
-            .then(()=>{
+       
+            ApiServer.post("/CadastraUsuario",{
+                nome: e.target.usuario.value,
+                senha:e.target.senha.value,
+            },
+            {headers: {"x-acess-token":Cookies.get(process.env.REACT_APP_TOKEN)}}).then(()=>{
                 alert("Usuario cadastrado com sucesso!")
-            })           
+            })
+         
     }
 
   return (
 
-    <Container component="div" sx={{ justifyContent:"center",display:"flex", flexDirection:"column",alignItems:"center",minHeight: "100vh"
-    }}>
+    <Container    sx={{ display:"flex",marginTop:"8%",flexDirection:"column",alignItems:"center",height: "90vh",width:"90vw"
+}}>
         
-        <Box component="div"  sx={{display:"flex",flexDirection:"row", minHeight:"400px", background:"gray",}}>
+        <Box component="div"  sx={{display:"flex",flexDirection:"row", minHeight:"400px"}}>
          
-           <Button variant="contained" onClick={() => navigate("/")} >Voltar</Button>
            <Box component="form" onSubmit={Cadastrar}   sx={{ display:"flex", flexDirection:"column"}}>
                <TextField type="text"     name="usuario"  label="Usuario"  variant="outlined" />
                <TextField type="password" name="senha"    label="Senha" variant="outlined" />

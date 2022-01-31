@@ -1,5 +1,5 @@
 import React from "react";
-import Router from "../Router/Routers.js"
+import Router from "../router/Routers.js"
 import { AutenticaUserProvider } from "../store/AutenticaUser";
 import { BrowserRouter } from "react-router-dom";
 
@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
         <Router/>
      </BrowserRouter>
-     </AutenticaUserProvider>
+  </AutenticaUserProvider>
    
     );
 }

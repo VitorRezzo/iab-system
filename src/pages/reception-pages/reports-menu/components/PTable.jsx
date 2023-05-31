@@ -53,18 +53,26 @@ Linhas.propTypes = {
 };
 
 export function PTable() {
-  const { patientsList, setPatientsList, listAllPatients } = useListPatients();
+  const { patientsList, setPatientsList } = useListPatients();
   const [open, setOpen] = useState(false);
   const [dataP, setDataP] = useState({ name: "", cpf: "" });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const debouncedValue = useDebounce(dataP, 500);
 
-  useEffect(() => {
-    listAllPatients();
-  }, []);
+  const listAllPatients = async () => {
+    console.log("listado....");
+    await ApiServer.get("/listAll-patients", {
+      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+    }).then((response) => {
+      for (let i = 0; i < response.data.length; i++) {
+        setPatientsList((prevent) => [...prevent, response.data[i]]);
+      }
+    });
+  };
 
   useEffect(() => {
+    listAllPatients();
     if (debouncedValue) {
       searchPatients();
     }
@@ -189,25 +197,22 @@ function Linhas(props) {
         }
       ).then((response) => {
         setListMovements(response.data.map((value) => value));
-        changeColorMov(response.data.map((value) => value.procedure));
+        changeColorMov();
       });
     }
   };
 
-  const changeColorMov = (value) => {
-    value.map((procedure) => {
-      switch (procedure) {
-        case "Exame":
-          setColorProcedure((prevent) => [...prevent, "#f3c75f"]);
-          break;
-        case "Quimioterapia":
-          setColorProcedure((prevent) => [...prevent, "#fe6c2b"]);
-          break;
-        case "Transplante de medula óssea":
-          setColorProcedure((prevent) => [...prevent, "#80b3ff"]);
-          break;
-      }
-    });
+  const changeColorMov = (procedure) => {
+    switch (procedure) {
+      case "Exame":
+        return "#f3c75f";
+      case "Quimioterapia":
+        return "#fe6c2b";
+      case "Transplante de medula óssea":
+        return "#80b3ff";
+      default:
+        return "#F2F2";
+    }
   };
 
   return (
@@ -307,7 +312,7 @@ function Linhas(props) {
                 </TableHead>
 
                 <TableHead>
-                  {listMovements.map((value, index) => (
+                  {listMovements.map((value) => (
                     <TableRow key={value.id}>
                       <TableCell>{value.origin}</TableCell>
                       <TableCell>{value.destiny}</TableCell>
@@ -316,7 +321,7 @@ function Linhas(props) {
                       <TableCell
                         align="center"
                         sx={{
-                          backgroundColor: colorProcedure[index]
+                          backgroundColor: changeColorMov(value.procedure)
                         }}
                       >
                         {value.procedure}

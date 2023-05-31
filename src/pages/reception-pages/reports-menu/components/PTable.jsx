@@ -185,7 +185,6 @@ function Linhas(props) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [listMovements, setListMovements] = useState([]);
-  const [colorProcedure, setColorProcedure] = useState([]);
   const listMovesP = async () => {
     setOpen(!open);
     if (open === false) {

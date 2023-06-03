@@ -1,7 +1,6 @@
 import React from "react";
 import ApiServer from "../../../../services/ApiServer.js";
 import Cookies from "js-cookie";
-import { useListPatients } from "../../../../shared/context/reception-sharedcomponents/list-context-report/PatientContext.jsx";
 import ListPatologia from "../../../../constants/ListPatologia.json";
 import ListEscolaridade from "../../../../constants/ListEscolaridade.json";
 import ListGenero from "../../../../constants/ListGenero.json";
@@ -18,8 +17,6 @@ import {
 } from "@mui/material";
 
 export default function PRFilters(props) {
-  const { setListPatients } = useListPatients();
-
   const Listfilters = async (e) => {
     e.preventDefault();
 
@@ -39,10 +36,7 @@ export default function PRFilters(props) {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
     ).then((response) => {
-      setListPatients([]);
-      for (let i = 0; i < response.data.length; i++) {
-        setListPatients((prevent) => [...prevent, response.data[i]]);
-      }
+      return response;
     });
   };
 

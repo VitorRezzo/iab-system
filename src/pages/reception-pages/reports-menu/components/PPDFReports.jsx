@@ -1,14 +1,12 @@
 import jsPDF from "jspdf";
 import React from "react";
 import { Avatar, Button, Box, Typography, Divider } from "@mui/material";
-import { useListPatients } from "../../../../shared/context/reception-sharedcomponents/list-context-report/PatientContext";
 import { styled } from "@mui/material/styles";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { renderToString } from "react-dom/server";
 import LogoIAB from "../../../../assets/img/LogoIAB.png";
 import moment from "moment";
 export function PPDFReports() {
-  const { patientsList } = useListPatients();
   const doc = new jsPDF("p", "px", "a4");
 
   const PatientPrint = () =>

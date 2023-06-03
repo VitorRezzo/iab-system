@@ -57,7 +57,10 @@ import {
   setDataCompanionForm,
   setDecrementAmoutForm
 } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
-import { removeImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+import {
+  removeImageMultUrls,
+  resetImageMultUrls
+} from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
 import { useDispatch, useSelector } from "react-redux";
 import URLToFile from "../../../../shared/features/URLToFile";
 
@@ -78,6 +81,7 @@ export function CompanionForm(props) {
   const dataCom = useSelector((state) => state.CompanionForm);
   const dispatch = useDispatch();
   useEffect(async () => {
+    dispatch(resetImageMultUrls(0));
     if (idPatient !== ":idPatient" && props.stateForm !== "new") {
       const response = await ApiServer.post(
         `/get-patients-byid/${idPatient}`,
@@ -91,7 +95,7 @@ export function CompanionForm(props) {
 
       dispatch(
         setImageMultUrls([
-          response.Avatar !== undefined ? "/files/" + response.Avatar.url : ""
+          response.Avatar ? "/files/" + response.Avatar.url : ""
         ])
       );
 

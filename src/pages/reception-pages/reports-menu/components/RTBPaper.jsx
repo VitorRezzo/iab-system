@@ -4,7 +4,6 @@ import Texturapaper from "../../../../assets/img/Texturapaper.jpg";
 import { BoxMark } from "../../../../shared/styles/reception-styles/StylecadP";
 import { useState } from "react";
 import { ETable } from "./ETable";
-import { PatientsProvider } from "../../../../shared/context/reception-sharedcomponents/list-context-report/PatientContext";
 import { CompanionsProvider } from "../../../../shared/context/reception-sharedcomponents/list-context-report/CompanionContext";
 
 export function RTBPaper(props) {
@@ -13,11 +12,7 @@ export function RTBPaper(props) {
   const Tables = () => {
     switch (props.name) {
       case "Pacientes":
-        return (
-          <PatientsProvider>
-            <PTable />
-          </PatientsProvider>
-        );
+        return <PTable />;
 
       case "Acompanhantes":
         return (

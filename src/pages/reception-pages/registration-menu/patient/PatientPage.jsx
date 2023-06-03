@@ -53,7 +53,7 @@ import { SideBarMenu } from "../../../../shared/components/reception-components/
 import { CameraFileMenu } from "../../../../shared/components/reception-components/camera-file-menu/CameraFileMenu";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setImageMultUrls,
+  resetImageMultUrls,
   setImageUrl
 } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
 import {
@@ -109,8 +109,8 @@ export function PatientPage() {
   }, [idPatient]);
 
   const resetForm = () => {
+    dispatch(resetImageMultUrls(0));
     dispatch(setImageUrl(""));
-    dispatch(setImageMultUrls([]));
     dispatch(setAmoutForm(0));
   };
 

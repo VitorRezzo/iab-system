@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const cameraFileSlice = createSlice({
   name: "cameraFileSlice",
   initialState: {
-    imageUrl: null,
+    imageUrl: "",
     imageMultUrls: [],
     stateModal: false
   },
@@ -17,6 +17,9 @@ const cameraFileSlice = createSlice({
     setImageMultUrls: (state, action) => {
       state.imageMultUrls = [...state.imageMultUrls, ...action.payload];
     },
+    resetImageMultUrls: (state, action) => {
+      state.imageMultUrls.length = action.payload;
+    },
     removeImageMultUrls: (state, action) => {
       state.imageMultUrls.splice(action.payload, 1);
     }
@@ -27,6 +30,7 @@ export const {
   setImageUrl,
   setStateModal,
   setImageMultUrls,
+  resetImageMultUrls,
   removeImageMultUrls
 } = cameraFileSlice.actions;
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -22,7 +21,6 @@ import ApiServer from "../../../../services/ApiServer.js";
 import Cookies from "js-cookie";
 import PRFilters from "./PRFilters.jsx";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { useListPatients } from "../../../../shared/context/reception-sharedcomponents/list-context-report/PatientContext.jsx";
 import { PPDFReports } from "./PPDFReports.jsx";
 
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
@@ -31,45 +29,13 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useDebounce from "../../../../shared/hooks/useDebounce.jsx";
 
-Linhas.propTypes = {
-  dados: PropTypes.shape({
-    fullname: PropTypes.string.isRequired,
-    cpf: PropTypes.string.isRequired,
-    Address: PropTypes.shape({
-      county: PropTypes.string.isRequired,
-      district: PropTypes.string.isRequired,
-      state: PropTypes.string.isRequired,
-      street: PropTypes.string.isRequired
-    }),
-    Status: PropTypes.shape({ status: PropTypes.string.isRequired }),
-    MedicalRecord: PropTypes.shape({
-      pathology: PropTypes.string.isRequired,
-      clinicalstate: PropTypes.string.isRequired
-    }),
-    Avatar: PropTypes.shape({
-      url: PropTypes.string
-    })
-  }).isRequired
-};
-
 export function PTable() {
-  const { patientsList, setPatientsList } = useListPatients();
+  const [patientsList, setPatientsList] = useState();
   const [open, setOpen] = useState(false);
   const [dataP, setDataP] = useState({ name: "", cpf: "" });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const debouncedValue = useDebounce(dataP, 500);
-
-  const listAllPatients = async () => {
-    console.log("listado....");
-    await ApiServer.get("/listAll-patients", {
-      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-    }).then((response) => {
-      for (let i = 0; i < response.data.length; i++) {
-        setPatientsList((prevent) => [...prevent, response.data[i]]);
-      }
-    });
-  };
 
   useEffect(() => {
     listAllPatients();
@@ -77,6 +43,14 @@ export function PTable() {
       searchPatients();
     }
   }, [debouncedValue]);
+
+  const listAllPatients = async () => {
+    await ApiServer.get("/listAll-patients", {
+      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+    }).then((response) => {
+      setPatientsList(response);
+    });
+  };
 
   const searchPatients = async () => {
     if (dataP.name !== "" && dataP.cpf !== "") {
@@ -152,8 +126,10 @@ export function PTable() {
       <TableContainer>
         <Table aria-label="collapsible table">
           <TableBody>
-            {patientsList.length > 0 ? (
-              patientsList.map((row) => <Linhas key={row.id} dados={row} />)
+            {patientsList ? (
+              patientsList.data.map((value) => (
+                <Linhas key={value.id} data={value} />
+              ))
             ) : (
               <TableRow
                 sx={{
@@ -179,26 +155,28 @@ export function PTable() {
   );
 }
 
-function Linhas(props) {
-  const { dados } = props;
+function Linhas(patient) {
   const today = new Date();
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const [listMovements, setListMovements] = useState([]);
+  const id = patient.data.id;
+
   const listMovesP = async () => {
-    setOpen(!open);
-    if (open === false) {
-      await ApiServer.post(
-        "/list-allmovementspatients",
-        { idPatient: dados.id, date: moment(today).format("YYYY-MM-DD") },
-        {
-          headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-        }
-      ).then((response) => {
-        setListMovements(response.data.map((value) => value));
-        changeColorMov();
-      });
-    }
+    await ApiServer.post(
+      "/list-allmovementspatients",
+      {
+        idPatient: patient.data.id,
+        date: moment(today).format("YYYY-MM-DD")
+      },
+      {
+        headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+      }
+    ).then((response) => {
+      setListMovements(response.data.map((value) => value));
+      changeColorMov();
+    });
+    setIsOpen(false);
   };
 
   const changeColorMov = (procedure) => {
@@ -219,7 +197,7 @@ function Linhas(props) {
       <TableRow
         aria-label="expand row"
         onClick={() => {
-          listMovesP();
+          isOpen ? listMovesP() : setIsOpen(true);
         }}
         sx={{
           marginTop: "2%",
@@ -229,17 +207,19 @@ function Linhas(props) {
         <TableCell>
           <Avatar
             src={
-              dados.Avatar?.url !== null ? "/files/" + dados.Avatar?.url : ""
+              patient.data.Avatar?.url !== null
+                ? "/files/" + patient.data.Avatar?.url
+                : ""
             }
             sx={{ width: "60px", height: "60px" }}
           />
         </TableCell>
-        <TableCell sx={{ color: "#171430" }} scope="dados">
-          {dados.fullname}
+        <TableCell sx={{ color: "#171430" }} scope="patient.data">
+          {patient.data.fullname}
         </TableCell>
-        <TableCell sx={{ color: "#171430" }}>{dados.cpf}</TableCell>
+        <TableCell sx={{ color: "#171430" }}>{patient.data.cpf}</TableCell>
         <TableCell sx={{ color: "#171430" }}>
-          {dados.MedicalRecord.pathology}
+          {patient.data.MedicalRecord.pathology}
         </TableCell>
         <TableCell>
           <Box
@@ -248,26 +228,26 @@ function Linhas(props) {
               paddingTop: "10%",
               color: "#353634",
               backgroundColor:
-                dados.Status.status == "Internado" ||
-                dados.Status.status == "Óbito"
+                patient.data.Status.status == "Internado" ||
+                patient.data.Status.status == "Óbito"
                   ? "#fa3e3e"
-                  : dados.Status.status == "Viagem"
+                  : patient.data.Status.status == "Viagem"
                   ? "#f3c75f"
-                  : dados.Status.status == "Curado"
+                  : patient.data.Status.status == "Curado"
                   ? "#80b3ff"
                   : "#a2fa1b",
               height: "30px",
               borderRadius: "5px"
             }}
           >
-            {dados.Status.status}
+            {patient.data.Status.status}
           </Box>
         </TableCell>
         <TableCell>
           <Tooltip title="Editar">
             <IconButton
               onClick={() => {
-                navigate(`/cadastro/paciente/${dados.id}`);
+                navigate(`/cadastro/paciente/${id}`);
               }}
             >
               <NoteAltIcon />
@@ -277,19 +257,21 @@ function Linhas(props) {
       </TableRow>
       <TableRow style={{ backgroundColor: "#f4f4f4" }}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
+          <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h5" gutterBottom component="div">
                 Endereço
               </Typography>
               <Box>
-                <Typography>Estado: {dados.Address.state}</Typography>
+                <Typography>Estado: {patient.data.Address.state}</Typography>
 
-                <Typography>Municipio: {dados.Address.county}</Typography>
+                <Typography>
+                  Municipio: {patient.data.Address.county}
+                </Typography>
 
-                <Typography>Bairro: {dados.Address.district}</Typography>
+                <Typography>Bairro: {patient.data.Address.district}</Typography>
 
-                <Typography>Rua: {dados.Address.street}</Typography>
+                <Typography>Rua: {patient.data.Address.street}</Typography>
               </Box>
             </Box>
             <Divider />
@@ -311,25 +293,25 @@ function Linhas(props) {
                 </TableHead>
 
                 <TableHead>
-                  {listMovements.map((value) => (
-                    <TableRow key={value.id}>
-                      <TableCell>{value.origin}</TableCell>
-                      <TableCell>{value.destiny}</TableCell>
-                      <TableCell>{value.transport}</TableCell>
-                      <TableCell>{value.price}</TableCell>
+                  {listMovements.map((moviment) => (
+                    <TableRow key={moviment.id}>
+                      <TableCell>{moviment.origin}</TableCell>
+                      <TableCell>{moviment.destiny}</TableCell>
+                      <TableCell>{moviment.transport}</TableCell>
+                      <TableCell>{moviment.price}</TableCell>
                       <TableCell
                         align="center"
                         sx={{
-                          backgroundColor: changeColorMov(value.procedure)
+                          backgroundColor: changeColorMov(moviment.procedure)
                         }}
                       >
-                        {value.procedure}
+                        {moviment.procedure}
                       </TableCell>
                       <TableCell>
-                        {moment(value.date).format("DD/MM/YYYY")}
+                        {moment(moviment.date).format("DD/MM/YYYY")}
                       </TableCell>
                       <TableCell>
-                        {moment(value.hour).format("HH:mm")}
+                        {moment(moviment.hour).format("HH:mm")}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -337,7 +319,7 @@ function Linhas(props) {
 
                 <TableBody>
                   <TableRow>
-                    <TableCell component="th" scope="dados"></TableCell>
+                    <TableCell component="th" scope="patient.data"></TableCell>
                     <TableCell></TableCell>
                     <TableCell align="right"></TableCell>
                     <TableCell align="right"></TableCell>

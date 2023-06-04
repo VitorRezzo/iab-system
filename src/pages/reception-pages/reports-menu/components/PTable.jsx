@@ -31,18 +31,13 @@ import useDebounce from "../../../../shared/hooks/useDebounce.jsx";
 
 export function PTable() {
   const [patientsList, setPatientsList] = useState();
-  const [open, setOpen] = useState(false);
-  const [dataP, setDataP] = useState({ name: "", cpf: "" });
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const debouncedValue = useDebounce(dataP, 500);
+  const [isOpen, setIsOpen] = useState(false);
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
   useEffect(() => {
     listAllPatients();
-    if (debouncedValue) {
-      searchPatients();
-    }
-  }, [debouncedValue]);
+  }, []);
 
   const listAllPatients = async () => {
     await ApiServer.get("/listAll-patients", {
@@ -52,25 +47,23 @@ export function PTable() {
     });
   };
 
-  const searchPatients = async () => {
-    if (dataP.name !== "" && dataP.cpf !== "") {
-      await ApiServer.post(
-        "/search-patient-bynameorcpf",
-        {
-          fullname: dataP.name,
-          cpf: dataP.cpf
-        },
-        {
-          headers: {
-            "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-          }
+  const searchPatients = async (value) => {
+    await ApiServer.post(
+      "/search-patient-bynameorcpf",
+      {
+        fullname: value,
+        cpf: value
+      },
+      {
+        headers: {
+          "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
         }
-      ).then((response) => {
-        setPatientsList(response.data);
-      });
-    }
+      }
+    ).then((response) => {
+      setPatientsList(response);
+    });
   };
-
+  const debounceSearchdPatients = useDebounce(searchPatients, 500);
   return (
     <>
       <Box
@@ -85,9 +78,7 @@ export function PTable() {
         <TextField
           type="text"
           sx={{ marginRight: "40%", width: "400px" }}
-          onChange={(event) => {
-            setDataP({ name: event.target.value, cpf: event.target.value });
-          }}
+          onChange={(e) => debounceSearchdPatients(e.target.value)}
           size="small"
           name="pesquisa"
           label="Pesquisar"
@@ -120,7 +111,7 @@ export function PTable() {
         </Button>
 
         <PPDFReports />
-        <PRFilters Open={open} Close={handleClose} />
+        <PRFilters Open={isOpen} Close={handleClose} />
       </Box>
 
       <TableContainer>
@@ -176,7 +167,7 @@ function Linhas(patient) {
       setListMovements(response.data.map((value) => value));
       changeColorMov();
     });
-    setIsOpen(false);
+    setIsOpen(true);
   };
 
   const changeColorMov = (procedure) => {
@@ -197,7 +188,7 @@ function Linhas(patient) {
       <TableRow
         aria-label="expand row"
         onClick={() => {
-          isOpen ? listMovesP() : setIsOpen(true);
+          isOpen ? setIsOpen(false) : listMovesP();
         }}
         sx={{
           marginTop: "2%",

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Grid,
   Paper,
@@ -72,7 +72,7 @@ export function MovementPage() {
   const [checkCompanion, setCheckCompanion] = useState([]);
   const [companionList, setCompanionList] = useState([]);
   const [moveData, setMoveData] = useState([""]);
-  const debouncedValue = useDebounce(moveData, 500);
+
   const { idmove } = useParams();
   const formRefMove = useRef(null);
   useEffect(async () => {
@@ -150,33 +150,32 @@ export function MovementPage() {
     }
   };
 
-  const searchPatientByName = useCallback(
-    async (name) => {
-      if (name.length > 2) {
-        await ApiServer.post(
-          "/search-patient-bynameorcpf",
-          {
-            fullname: name
-          },
-          {
-            headers: {
-              "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-            }
+  const searchPatientByName = async (name) => {
+    if (name.length > 2) {
+      await ApiServer.post(
+        "/search-patient-bynameorcpf",
+        {
+          fullname: name
+        },
+        {
+          headers: {
+            "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
           }
-        ).then((response) => {
-          setMoveData(
-            response.data.map((value) => ({
-              id: value.id,
-              idCompanion: value.Companions,
-              label: value.fullname,
-              Avatar: "/files/" + value.Avatar.url
-            }))
-          );
-        });
-      }
-    },
-    [debouncedValue]
-  );
+        }
+      ).then((response) => {
+        setMoveData(
+          response.data.map((value) => ({
+            id: value.id,
+            idCompanion: value.Companions,
+            label: value.fullname,
+            Avatar: "/files/" + value.Avatar.url
+          }))
+        );
+      });
+    }
+  };
+
+  const debouncedsearchPatientByName = useDebounce(searchPatientByName, 500);
 
   return (
     <Box sx={{ padding: "4%", marginTop: "2%" }}>
@@ -249,7 +248,9 @@ export function MovementPage() {
                       placeholder="Paciente"
                       name="fullname"
                       size="small"
-                      onChange={(e) => searchPatientByName(e.target.value)}
+                      onChange={(e) =>
+                        debouncedsearchPatientByName(e.target.value)
+                      }
                       moveData={moveData}
                     />
                   </Grid>

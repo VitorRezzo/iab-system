@@ -7,7 +7,6 @@ import {
   Typography,
   Divider,
   IconButton,
-  Avatar,
   DialogContent,
   Dialog,
   DialogContentText,
@@ -54,7 +53,6 @@ import { CameraFileMenu } from "../../../../shared/components/reception-componen
 import { setImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
 import {
   removeDataCapanionForm,
-  setDataCompanionForm,
   setDecrementAmoutForm
 } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
 import {
@@ -72,44 +70,51 @@ export function CompanionForm(props) {
   const [vheight, setVHeight] = useState(0);
   const HeightPaper = "140px";
   const [ageP, setAgeP] = useState(0);
-  const [dataCompanion, setDataCompanion] = useState();
-
   const { idPatient } = useParams();
   const formRef = useRef(null);
-
   const dataImage = useSelector((state) => state.cameraFileMenu);
   const dataCom = useSelector((state) => state.CompanionForm);
   const dispatch = useDispatch();
+
   useEffect(async () => {
-    dispatch(resetImageMultUrls(0));
-    if (idPatient !== ":idPatient" && props.stateForm !== "new") {
+    const controller = new AbortController();
+    if (idPatient !== ":idPatient" && props.state !== "new") {
+      dispatch(resetImageMultUrls(0));
       const response = await ApiServer.post(
         `/get-patients-byid/${idPatient}`,
         null,
         {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+        },
+        {
+          signal: controller.signal
         }
       ).then((response) => {
         return response.data.Companions[props.position];
       });
 
       dispatch(
-        setImageMultUrls([
-          response.Avatar ? "/files/" + response.Avatar.url : ""
-        ])
+        setImageMultUrls(
+          response?.Avatar ? "/files/" + response.Avatar?.url : ""
+        )
       );
 
       const datasCompanion = {
         ...response,
-        status: response.Status.status,
-        state: response.Address.state,
-        county: response.Address.county,
-        district: response.Address.district,
-        street: response.Address.street
+        status: response?.Status.status,
+        state: response?.Address.state,
+        county: response?.Address.county,
+        district: response?.Address.district,
+        street: response?.Address.street
       };
-      setDataCompanion(datasCompanion);
+
       formRef.current?.setData(datasCompanion);
     }
+
+    return () => {
+      controller.abort();
+      dispatch(resetImageMultUrls(0));
+    };
   }, [idPatient]);
 
   const handleChangeAge = (newDate) => {
@@ -143,29 +148,17 @@ export function CompanionForm(props) {
       headers: {
         "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
       }
-    })
-      .then(() => {
-        setDataCompanion((newdata) => [...newdata, dataform]);
-        setMessageAlert(`Ficha ${props.position + 1} Gravada!`);
-        setOpenMessageAlert(true);
-        setTypeAlert("success");
-      })
-      .catch((erro) => {
-        console.log(erro);
-      });
+    });
   };
 
   const handleSaveFile = (position, data) => {
-    if (
-      dataCom.dataCompanionForm[position - 1]?.cpf === undefined &&
-      position !== 0
-    ) {
+    if (dataImage.imageMultUrls[position - 1] === undefined) {
       setMessageAlert("Favor Gravar Ficha " + position + " !");
       setOpenMessageAlert(true);
       setTypeAlert("warning");
     } else {
+      registerCompanion(data);
       dispatch(setDataCompanionForm([data]));
-      setDataCompanion(data);
       setMessageAlert(`Ficha ${position + 1} foi gravado!`);
       setOpenMessageAlert(true);
       setTypeAlert("success");
@@ -182,7 +175,7 @@ export function CompanionForm(props) {
     setTypeAlert("info");
   };
   const removeCompanionAssocitedPatient = async (position) => {
-    if (datacad[position]?.id !== undefined) {
+    if (dataCom.dataCompanionForm[position]?.id !== undefined) {
       await ApiServer.post(
         "/search-companion-bynameorcpf",
         {
@@ -259,8 +252,8 @@ export function CompanionForm(props) {
             district: response.data[0].Address.district,
             street: response.data[0].Address.street
           };
-          datacad.splice(props.position, 0, datasCompanion);
-          formRefAco.current?.setData(newObj);
+
+          formRef.current?.setData(datasCompanion);
           setOpenMessageAlert(true);
           setMessageAlert("Acompanhante já Cadastrado!");
           setTypeAlert("warning");
@@ -317,13 +310,13 @@ export function CompanionForm(props) {
       <AlertMessage />
 
       <Grid container spacing={0.8}>
-        {props.stateForm === "new" && dataCompanion?.cpf === undefined ? (
+        {props.position && props.state === "new" ? (
           <SRButton
             sx={{
               background: "#F29F05"
             }}
             onClick={() => {
-              formRefAco.current?.submitForm();
+              formRef.current?.submitForm();
               setVHeight(HeightPaper);
             }}
           >
@@ -354,7 +347,7 @@ export function CompanionForm(props) {
             background: "#BF0404"
           }}
           onClick={() => {
-            props.stateForm === "new" && dataCompanion?.cpf === undefined
+            props.state === "new"
               ? handleRemoveFile(props.position)
               : setOpenDialog(true);
           }}
@@ -370,7 +363,7 @@ export function CompanionForm(props) {
         <Paper
           sx={{
             minWidth: "100%",
-            height: vheight === 0 ? "100%" : HeightPaper
+            height: vheight !== 0 ? "100%" : HeightPaper
           }}
           elevation={5}
         >
@@ -379,63 +372,32 @@ export function CompanionForm(props) {
               <img
                 src={PinoAcom}
                 style={{
-                  marginTop: "-10%",
-                  marginLeft: "10%",
+                  marginTop: "-20%",
+                  marginLeft: "2%",
                   width: "55px",
                   height: "55px"
                 }}
               />
             </Grid>
-            {dataCompanion?.cpf && vheight === HeightPaper ? (
-              <Grid container>
-                <Grid item xs={4}>
-                  <Avatar
-                    src={dataImage.imageMultUrls[props.position]}
-                    sx={{
-                      width: "100px",
-                      height: "100px",
-                      marginTop: "-6%",
-                      marginLeft: "50%"
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      marginTop: "1%",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      fontSize: "2rem",
-                      textOverflow: "ellipsis"
-                    }}
-                    component="span"
-                  >
-                    {dataCompanion?.fullname}
-                  </Typography>
-                </Grid>
-              </Grid>
-            ) : (
-              <Typography
-                sx={{ marginTop: "1.8%", marginLeft: "15%", color: "#085A8C" }}
-                alt="Dados do Acompanhante"
-                variant="h4"
-                noWrap
-                component="span"
-              >
-                Ficha do Acompanhante {props.position + 1}
-              </Typography>
-            )}
+
+            <Typography
+              sx={{ marginTop: "5%", marginLeft: "15%", color: "#085A8C" }}
+              alt="Dados do Acompanhante"
+              variant="h4"
+              noWrap
+              component="span"
+            >
+              Ficha do Acompanhante {props.position + 1}
+            </Typography>
+
             <Grid item xs={12}>
               <IconButton
                 sx={{
                   marginLeft: "95%",
-                  marginTop: "-9%"
+                  marginTop: "-8%"
                 }}
                 onClick={() =>
-                  vheight === HeightPaper
-                    ? setVHeight(0)
-                    : setVHeight(HeightPaper)
+                  vheight !== 0 ? setVHeight(0) : setVHeight(HeightPaper)
                 }
               >
                 {vheight !== 0 ? (
@@ -446,12 +408,11 @@ export function CompanionForm(props) {
               </IconButton>
             </Grid>
           </Grid>
+
           <Form
             ref={formRef}
             onSubmit={(data) => {
-              idPatient !== ":idPatient"
-                ? registerCompanion(data)
-                : handleSaveFile(props.position, data);
+              handleSaveFile(props.position, data);
             }}
           >
             <Grid
@@ -459,7 +420,7 @@ export function CompanionForm(props) {
               sx={{
                 marginTop: "2%",
                 padding: "2%",
-                display: vheight !== 0 ? "none" : ""
+                display: vheight === 0 ? "none" : ""
               }}
               spacing={2}
             >

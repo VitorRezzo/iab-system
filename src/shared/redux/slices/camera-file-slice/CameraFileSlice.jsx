@@ -15,7 +15,7 @@ const cameraFileSlice = createSlice({
       state.stateModal = action.payload;
     },
     setImageMultUrls: (state, action) => {
-      state.imageMultUrls = [...state.imageMultUrls, ...action.payload];
+      state.imageMultUrls.push(action.payload);
     },
     resetImageMultUrls: (state, action) => {
       state.imageMultUrls.length = action.payload;

@@ -17,7 +17,7 @@ const companionFormSlice = createSlice({
       state.amoutForm -= action.payload;
     },
     setDataCompanionForm: (state, action) => {
-      state.dataCompanionForm = [...state.dataCompanionForm, ...action.payload];
+      state.dataCompanionForm.push(action.payload);
     },
     removeDataCapanionForm: (state, action) => {
       state.dataCompanionForm.splice(action.payload, 1);

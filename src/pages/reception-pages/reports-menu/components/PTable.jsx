@@ -148,10 +148,17 @@ export function PTable() {
 
 function Linhas(patient) {
   const today = new Date();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(null);
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
   const navigate = useNavigate();
   const [listMovements, setListMovements] = useState([]);
-  const id = patient.data.id;
+
+  useEffect(() => {
+    return () => {
+      setIsOpen(null);
+    };
+  }, []);
 
   const listMovesP = async () => {
     await ApiServer.post(
@@ -167,7 +174,7 @@ function Linhas(patient) {
       setListMovements(response.data.map((value) => value));
       changeColorMov();
     });
-    setIsOpen(true);
+    handleOpen();
   };
 
   const changeColorMov = (procedure) => {
@@ -188,7 +195,7 @@ function Linhas(patient) {
       <TableRow
         aria-label="expand row"
         onClick={() => {
-          isOpen ? setIsOpen(false) : listMovesP();
+          isOpen ? handleClose() : listMovesP();
         }}
         sx={{
           marginTop: "2%",
@@ -238,7 +245,7 @@ function Linhas(patient) {
           <Tooltip title="Editar">
             <IconButton
               onClick={() => {
-                navigate(`/cadastro/paciente/${id}`);
+                navigate(`/cadastro/paciente/${patient.data.id}`);
               }}
             >
               <NoteAltIcon />

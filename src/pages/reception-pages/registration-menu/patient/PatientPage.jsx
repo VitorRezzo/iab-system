@@ -66,7 +66,6 @@ export function PatientPage() {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
     useAlertMessageContext();
   const [patientData, setPatientData] = useState();
-  const [companionFormStatus, setCompanionFormStatus] = useState();
   const [ageP, setAgeP] = useState(0);
   const formRef = useRef(null);
   const navigate = useNavigate();
@@ -75,13 +74,18 @@ export function PatientPage() {
   const dataImage = useSelector((state) => state.cameraFileMenu);
   const dataForm = useSelector((state) => state.companionForm);
   useEffect(async () => {
-    resetForm();
+    const controller = new AbortController();
+
     if (idPatient !== ":idPatient") {
+      resetForm();
       const response = await ApiServer.post(
         `/get-patients-byid/${idPatient}`,
         null,
         {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+        },
+        {
+          signal: controller.signal
         }
       ).then((response) => {
         return response;
@@ -106,6 +110,10 @@ export function PatientPage() {
       setPatientData(response.data);
       dispatch(setIncremetAmoutForm(response.data.Companions.length));
     }
+
+    return () => {
+      controller.abort();
+    };
   }, [idPatient]);
 
   const resetForm = () => {
@@ -556,7 +564,6 @@ export function PatientPage() {
               <Tooltip title="Adcionar Ficha">
                 <IconButton
                   onClick={() => {
-                    setCompanionFormStatus("new");
                     dispatch(setIncremetAmoutForm(1));
                   }}
                   sx={{ marginTop: "10%" }}
@@ -590,7 +597,7 @@ export function PatientPage() {
         <CompanionForm
           key={index}
           position={index}
-          stateForm={companionFormStatus}
+          state={patientData?.Companions[index] ? "save" : "new"}
         />
       ))}
     </Box>

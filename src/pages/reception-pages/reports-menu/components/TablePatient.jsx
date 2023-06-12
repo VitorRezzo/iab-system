@@ -19,21 +19,23 @@ import {
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import ApiServer from "../../../../services/ApiServer.js";
 import Cookies from "js-cookie";
-import PRFilters from "./PRFilters.jsx";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { PPDFReports } from "./PPDFReports.jsx";
-
+import { FilterTable } from "./FilterTable.jsx";
+import { PDFReports } from "./PDFReports.jsx";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useDebounce from "../../../../shared/hooks/useDebounce.jsx";
+import { setPatientTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
+import { useDispatch, useSelector } from "react-redux";
 
-export function PTable() {
-  const [patientsList, setPatientsList] = useState();
+export function TablePatient() {
   const [isOpen, setIsOpen] = useState(false);
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
+  const dispatch = useDispatch();
+  const Data = useSelector((state) => state.reportsMenu);
 
   useEffect(() => {
     listAllPatients();
@@ -43,7 +45,7 @@ export function PTable() {
     await ApiServer.get("/listAll-patients", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
-      setPatientsList(response);
+      dispatch(setPatientTable(response));
     });
   };
 
@@ -60,10 +62,12 @@ export function PTable() {
         }
       }
     ).then((response) => {
-      setPatientsList(response);
+      dispatch(setPatientTable(response));
     });
   };
+
   const debounceSearchdPatients = useDebounce(searchPatients, 500);
+
   return (
     <>
       <Box
@@ -109,17 +113,16 @@ export function PTable() {
         >
           Filtros
         </Button>
-
-        <PPDFReports />
-        <PRFilters Open={isOpen} Close={handleClose} />
+        <PDFReports type="patient" />
+        <FilterTable open={isOpen} close={handleClose} type="patient" />
       </Box>
 
       <TableContainer>
         <Table aria-label="collapsible table">
           <TableBody>
-            {patientsList ? (
-              patientsList.data.map((value) => (
-                <Linhas key={value.id} data={value} />
+            {Data.patientTable !== null ? (
+              Data.patientTable.data.map((value, index) => (
+                <Linhas key={index} data={value} />
               ))
             ) : (
               <TableRow
@@ -205,8 +208,8 @@ function Linhas(patient) {
         <TableCell>
           <Avatar
             src={
-              patient.data.Avatar?.url !== null
-                ? "/files/" + patient.data.Avatar?.url
+              patient.data.Avatar.url !== null
+                ? "/files/" + patient.data?.Avatar.url
                 : ""
             }
             sx={{ width: "60px", height: "60px" }}

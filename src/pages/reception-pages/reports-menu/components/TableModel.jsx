@@ -1,24 +1,28 @@
-import { PTable } from "./PTable";
+import { TablePatient } from "./TablePatient";
 import { Paper } from "@mui/material";
 import Texturapaper from "../../../../assets/img/Texturapaper.jpg";
 import { BoxMark } from "../../../../shared/styles/reception-styles/StylecadP";
 import { useState } from "react";
-import { ETable } from "./ETable";
-import { CompanionsProvider } from "../../../../shared/context/reception-sharedcomponents/list-context-report/CompanionContext";
-
-export function RTBPaper(props) {
+import { TableCampanion } from "./TableCampanion";
+import { store } from "../../../../shared/redux/store/store";
+import { Provider } from "react-redux";
+export function TableModel(props) {
   const [vheight, setVHeight] = useState(null);
 
   const Tables = () => {
     switch (props.name) {
       case "Pacientes":
-        return <PTable />;
+        return (
+          <Provider store={store}>
+            <TablePatient />
+          </Provider>
+        );
 
       case "Acompanhantes":
         return (
-          <CompanionsProvider>
-            <ETable />
-          </CompanionsProvider>
+          <Provider store={store}>
+            <TableCampanion />
+          </Provider>
         );
     }
   };

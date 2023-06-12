@@ -15,15 +15,17 @@ import {
   TextField,
   Box
 } from "@mui/material";
-import { useListCompanions } from "../../../../shared/context/reception-sharedcomponents/list-context-report/CompanionContext.jsx";
-export function ERFilters(props) {
-  const { setCompanionsList } = useListCompanions();
+import { useDispatch } from "react-redux";
 
-  const Listfilters = async (e) => {
+import { setPatientTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
+import { setCompanionTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
+export function FilterTable(props) {
+  const dispatch = useDispatch();
+
+  const ListFilteredPatients = async (e) => {
     e.preventDefault();
-
     await ApiServer.post(
-      "/filter-companions",
+      "/filter-patients",
       {
         religion: "",
         county: e.target.municipio.value,
@@ -38,22 +40,43 @@ export function ERFilters(props) {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
     ).then((response) => {
-      setCompanionsList([]);
-      for (let i = 0; i < response.data.length; i++) {
-        setCompanionsList((prevent) => [...prevent, response.data[i]]);
+      dispatch(setPatientTable(response));
+    });
+  };
+
+  const ListFilteredCompanions = async (e) => {
+    e.preventDefault();
+    await ApiServer.post(
+      "/filter-companions",
+      {
+        religion: "",
+        county: e.target.municipio.value,
+        schooling: e.target.grauinstru.value,
+        profession: "",
+        state: "",
+        gender: e.target.genero.value
+      },
+      {
+        headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
+    ).then((response) => {
+      dispatch(setCompanionTable(response));
     });
   };
 
   return (
     <React.Fragment>
-      <Dialog open={props.Open} onClose={props.Close}>
+      <Dialog open={props?.open} onClose={props.close}>
         <DialogTitle>Filtros</DialogTitle>
         <DialogContent>
           <Box
             noValidate
             component="form"
-            onSubmit={Listfilters}
+            onSubmit={(data) => {
+              props.type == "patient"
+                ? ListFilteredPatients(data)
+                : ListFilteredCompanions(data);
+            }}
             sx={{
               display: "flex",
               flexDirection: "column",

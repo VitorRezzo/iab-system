@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -19,69 +18,51 @@ import {
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import ApiServer from "../../../../services/ApiServer.js";
 import Cookies from "js-cookie";
+import { FilterTable } from "./FilterTable.jsx";
+import { PDFReports } from "./PDFReports.jsx";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
-import { useListCompanions } from "../../../../shared/context/reception-sharedcomponents/list-context-report/CompanionContext.jsx";
 import { useEffect } from "react";
-import { EPDFReports } from "./EPDFReports.jsx";
-import { ERFilters } from "./ERFilters.jsx";
+import { setCompanionTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
 import useDebounce from "../../../../shared/hooks/useDebounce.jsx";
+import { useDispatch, useSelector } from "react-redux";
+export function TableCampanion() {
+  const Data = useSelector((state) => state.reportsMenu);
+  const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
-Linhas.propTypes = {
-  dados: PropTypes.shape({
-    fullname: PropTypes.string.isRequired,
-    cpf: PropTypes.string.isRequired,
-    Address: PropTypes.shape({
-      county: PropTypes.string.isRequired,
-      district: PropTypes.string.isRequired,
-      state: PropTypes.string.isRequired,
-      street: PropTypes.string.isRequired
-    }),
-    Status: PropTypes.shape({ status: PropTypes.string.isRequired }),
-    Avatar: PropTypes.shape({
-      url: PropTypes.string
-    })
-  }).isRequired
-};
-
-export function ETable() {
-  const { companionsList, setCompanionsList, listAllCompanions } =
-    useListCompanions();
-  const [open, setOpen] = useState(false);
-  const [dataE, setDataE] = useState({ name: "", cpf: "" });
-  const debouncedValue = useDebounce(dataE, 500);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const listAllCompanions = async () => {
+    await ApiServer.get("/list-Allcompanions", {
+      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+    }).then((response) => {
+      dispatch(setCompanionTable(response));
+    });
+  };
 
   useEffect(() => {
     listAllCompanions();
   }, []);
-  useEffect(() => {
-    if (debouncedValue) {
-      searchCompanions();
-    }
-  }, [debouncedValue]);
 
-  const searchCompanions = async () => {
-    if (dataE.name !== "" && dataE.cpf !== "") {
-      await ApiServer.post(
-        "/search-companion-bynameorcpf",
+  const searchCompanions = async (value) => {
+    await ApiServer.post(
+      "/search-companion-bynameorcpf",
 
-        {
-          fullname: dataE.name,
-          cpf: dataE.cpf
-        },
-        {
-          headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-        }
-      ).then((response) => {
-        setCompanionsList(response.data);
-      });
-    }
+      {
+        fullname: value,
+        cpf: value
+      },
+      {
+        headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+      }
+    ).then((response) => {
+      dispatch(setCompanionTable(response));
+    });
   };
-
+  const debounceSearchCompanions = useDebounce(searchCompanions, 500);
   return (
     <>
       <Box
@@ -96,9 +77,7 @@ export function ETable() {
         <TextField
           type="text"
           sx={{ marginRight: "40%", width: "400px" }}
-          onChange={(event) => {
-            setDataE({ name: event.target.value, cpf: event.target.value });
-          }}
+          onChange={(e) => debounceSearchCompanions(e.target.value)}
           size="small"
           name="pesquisa"
           label="Pesquisar"
@@ -114,7 +93,7 @@ export function ETable() {
         />
         <Button
           onClick={() => {
-            listAllDataCompanions();
+            listAllCompanions();
           }}
           sx={{ height: "40px", marginRight: "2%" }}
           variant="contained"
@@ -129,15 +108,17 @@ export function ETable() {
         >
           Filtros
         </Button>
-        <ERFilters Open={open} Close={handleClose} />
-        <EPDFReports />
+        <PDFReports type="companion" />
+        <FilterTable open={isOpen} close={handleClose} type="companion" />
       </Box>
 
       <TableContainer>
         <Table aria-label="collapsible table">
           <TableBody>
-            {companionsList.length > 0 ? (
-              companionsList.map((row) => <Linhas key={row.id} dados={row} />)
+            {Data.companionTable ? (
+              Data.companionTable.data.map((value, index) => (
+                <Linhas key={index} data={value} />
+              ))
             ) : (
               <TableRow
                 sx={{
@@ -163,11 +144,17 @@ export function ETable() {
   );
 }
 
-function Linhas(props) {
-  const { dados } = props;
-  const [open, setOpen] = useState(false);
+function Linhas(companion) {
+  const [isOpen, setIsOpen] = useState(null);
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    return () => {
+      setIsOpen(null);
+    };
+  }, []);
   return (
     <React.Fragment>
       <TableRow
@@ -177,22 +164,24 @@ function Linhas(props) {
           backgroundColor: "#e6e8e3"
         }}
         onClick={() => {
-          setOpen(!open);
+          isOpen ? handleClose() : handleOpen();
         }}
       >
         <TableCell>
           <Avatar
             src={
-              dados.Avatar?.url !== null ? "/files/" + dados.Avatar?.url : ""
+              companion.data.Avatar?.url !== null
+                ? "/files/" + companion.data.Avatar?.url
+                : ""
             }
             sx={{ width: "60px", height: "60px" }}
             alt="Avatar Acompanhantes"
           />
         </TableCell>
-        <TableCell sx={{ color: "#171430" }} scope="dados">
-          {dados.fullname}
+        <TableCell sx={{ color: "#171430" }} scope="companion.data">
+          {companion.data.fullname}
         </TableCell>
-        <TableCell sx={{ color: "#171430" }}>{dados.cpf}</TableCell>
+        <TableCell sx={{ color: "#171430" }}>{companion.data.cpf}</TableCell>
 
         <TableCell>
           <Box
@@ -201,26 +190,26 @@ function Linhas(props) {
               paddingTop: "10%",
               color: "#353634",
               backgroundColor:
-                dados.Status.status == "Internado" ||
-                dados.Status.status == "Óbito"
+                companion.data.Status.status == "Internado" ||
+                companion.data.Status.status == "Óbito"
                   ? "#fa3e3e"
-                  : dados.Status.status == "Viagem"
+                  : companion.data.Status.status == "Viagem"
                   ? "#f3c75f"
-                  : dados.Status.status == "Curado"
+                  : companion.data.Status.status == "Curado"
                   ? "#80b3ff"
                   : "#a2fa1b",
               height: "30px",
               borderRadius: "5px"
             }}
           >
-            {dados.Status.status}
+            {companion.data.Status.status}
           </Box>
         </TableCell>
         <TableCell>
           <Tooltip title="Editar">
             <IconButton
               onClick={() => {
-                navigate(`/cadastro/Acompanhante/${dados.id}`);
+                navigate(`/cadastro/Acompanhante/${companion.data.id}`);
               }}
             >
               <NoteAltIcon />
@@ -230,19 +219,23 @@ function Linhas(props) {
       </TableRow>
       <TableRow style={{ backgroundColor: "#f4f4f4" }}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
+          <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h5" gutterBottom component="div">
                 Endereço
               </Typography>
               <Box>
-                <Typography>Estado: {dados.Address.state}</Typography>
+                <Typography>Estado: {companion.data.Address.state}</Typography>
 
-                <Typography>Municipio: {dados.Address.county}</Typography>
+                <Typography>
+                  Municipio: {companion.data.Address.county}
+                </Typography>
 
-                <Typography>Bairro: {dados.Address.district}</Typography>
+                <Typography>
+                  Bairro: {companion.data.Address.district}
+                </Typography>
 
-                <Typography>Rua: {dados.Address.street}</Typography>
+                <Typography>Rua: {companion.data.Address.street}</Typography>
               </Box>
             </Box>
             <Divider />

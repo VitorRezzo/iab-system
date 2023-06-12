@@ -9,8 +9,6 @@ import { ReportPage } from "../../pages/reception-pages/reports-menu/ReportPage"
 import { RegisterUserPage } from "../../pages/reception-pages/settings-menu/RegisterUserPage";
 
 import { ChartsPage } from "../../pages/reception-pages/charts-menu/ChartsPage";
-import { PPDFReports } from "../../pages/reception-pages/reports-menu/components/PPDFReports";
-import { EPDFReports } from "../../pages/reception-pages/reports-menu/components/EPDFReports";
 import { TypeCharts } from "../../pages/reception-pages/charts-menu/components/TypeCharts";
 
 import { CadDataContextProvider } from "../../pages/reception-pages/registration-menu/context/CadDataContext";
@@ -55,8 +53,6 @@ export function Router() {
       <Route exact path="/relatorios" element={<ReportPage />} />
       <Route exact path="/graficos" element={<ChartsPage />} />
 
-      <Route exact path="/gerar/pdfs-e" element={<EPDFReports />} />
-      <Route exact path="/gerar/pdfs-p" element={<PPDFReports />} />
       <Route exact path="/gerar/graphs" element={<TypeCharts />} />
 
       <Route

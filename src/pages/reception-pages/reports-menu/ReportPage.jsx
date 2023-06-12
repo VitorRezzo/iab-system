@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from "@mui/material";
-import { RTBPaper } from "./components/RTBPaper";
+import { TableModel } from "./components/TableModel";
 import TexturaPran from "../../../assets/img/TexturaPran.jpg";
 
 export function ReportPage() {
@@ -30,10 +30,10 @@ export function ReportPage() {
         >
           Relatórios
         </Typography>
-        <RTBPaper name="Pacientes" color="#038bbb" />
-        <RTBPaper name="Acompanhantes" color="#0a6789" />
-        <RTBPaper name="Movimentos" color="#152b3c" />
-        <RTBPaper name="Despesas" color="#03223f" />
+        <TableModel name="Pacientes" color="#038bbb" />
+        <TableModel name="Acompanhantes" color="#0a6789" />
+        <TableModel name="Movimentos" color="#152b3c" />
+        <TableModel name="Despesas" color="#03223f" />
       </Paper>
     </Box>
   );

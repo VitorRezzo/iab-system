@@ -310,7 +310,7 @@ export function CompanionForm(props) {
       <AlertMessage />
 
       <Grid container spacing={0.8}>
-        {props.position && props.state === "new" ? (
+        {props.position !== null && props.state === "new" ? (
           <SRButton
             sx={{
               background: "#F29F05"

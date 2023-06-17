@@ -39,7 +39,7 @@ export function TableCampanion() {
     await ApiServer.get("/list-Allcompanions", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
-      dispatch(setCompanionTable(response));
+      dispatch(setCompanionTable(response.data));
     });
   };
 
@@ -59,7 +59,7 @@ export function TableCampanion() {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
     ).then((response) => {
-      dispatch(setCompanionTable(response));
+      dispatch(setCompanionTable(response.data));
     });
   };
   const debounceSearchCompanions = useDebounce(searchCompanions, 500);
@@ -116,7 +116,7 @@ export function TableCampanion() {
         <Table aria-label="collapsible table">
           <TableBody>
             {Data.companionTable ? (
-              Data.companionTable.data.map((value, index) => (
+              Data.companionTable.map((value, index) => (
                 <Linhas key={index} data={value} />
               ))
             ) : (

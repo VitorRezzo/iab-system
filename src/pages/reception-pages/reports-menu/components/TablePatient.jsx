@@ -45,7 +45,7 @@ export function TablePatient() {
     await ApiServer.get("/listAll-patients", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
-      dispatch(setPatientTable(response));
+      dispatch(setPatientTable(response.data));
     });
   };
 
@@ -62,7 +62,7 @@ export function TablePatient() {
         }
       }
     ).then((response) => {
-      dispatch(setPatientTable(response));
+      dispatch(setPatientTable(response.data));
     });
   };
 
@@ -121,7 +121,7 @@ export function TablePatient() {
         <Table aria-label="collapsible table">
           <TableBody>
             {Data.patientTable !== null ? (
-              Data.patientTable.data.map((value, index) => (
+              Data.patientTable.map((value, index) => (
                 <Linhas key={index} data={value} />
               ))
             ) : (

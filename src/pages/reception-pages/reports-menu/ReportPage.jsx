@@ -1,6 +1,6 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { TableModel } from "./components/TableModel";
-import TexturaPran from "../../../assets/img/TexturaPran.jpg";
+import BackgroundPages from "../../../assets/img/BackgroundPages.svg";
 
 export function ReportPage() {
   return (
@@ -17,16 +17,17 @@ export function ReportPage() {
         sx={{
           padding: "2%",
           width: "80%",
-          backgroundImage: `url(${TexturaPran})`,
-          marginTop: "2%"
+          backgroundImage: `url(${BackgroundPages})`,
+          marginTop: "2%",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat"
         }}
         elevation={5}
       >
         <Typography
-          sx={{ color: "#085A8C", marginLeft: "2%", paddingBottom: "10%" }}
-          variant="h4"
+          sx={{ marginLeft: "2%", paddingBottom: "10%" }}
+          variant="h1"
           noWrap
-          component="div"
         >
           Relatórios
         </Typography>

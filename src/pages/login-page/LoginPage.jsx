@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Box, Button, Radio, Typography, Grid } from "@mui/material";
-import BrunnoLogo from "../../assets/img/BrunnoLogo.png";
-import FundoP from "../../assets/img/FundoP.jpg";
+import BrunnoLogo from "../../assets/img/BrunnoLogo.svg";
+import BackgroundMenu from "../../assets/img/BackgroundMenu.svg";
 import ApiServer from "../../services/ApiServer.js";
 import Cookies from "js-cookie";
 import { VTextField } from "../../shared/components/form-unform/VTextField.tsx";
@@ -64,7 +64,7 @@ export function LoginPage({ children }) {
           width: "50%",
           height: "340px",
           borderRadius: "10px",
-          backgroundImage: `url(${FundoP})`,
+          backgroundImage: `url(${BackgroundMenu})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat"
         }}
@@ -90,80 +90,86 @@ export function LoginPage({ children }) {
                 LoginUsuario(data);
               }}
             >
-              <Typography variant="h4" sx={{ color: "#FFFF", marginTop: "3%" }}>
-                Faça seu Login!
-              </Typography>
-              <Box sx={{ marginTop: "10%" }}>
-                <VTextField
-                  name="user"
-                  label="Usuario"
-                  color="#FFF"
-                  sx={{ width: "80%" }}
-                />
-                <VTextField
-                  name="pass"
-                  label="Senha"
-                  color="#FFF"
-                  type="password"
-                  sx={{ width: "80%" }}
-                />
-                <Grid container sx={{ marginTop: "5%" }}>
-                  <Grid item xs={6}>
-                    <Radio
-                      checked={selectedModule === MIABACOLHIMENTO}
-                      onChange={handleChange}
-                      value={MIABACOLHIMENTO}
-                      sx={{
-                        color: "info",
-                        "&.Mui-checked": {
-                          color: "#3ec9a7"
-                        }
-                      }}
-                    />
-                    <Typography
-                      variant="subtitle1"
-                      component="label"
-                      sx={{ color: "#3ec9a7" }}
-                    >
-                      ACOLHIMENTO
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Radio
-                      checked={selectedModule === MIABESTOQUE}
-                      onChange={handleChange}
-                      value={MIABESTOQUE}
-                      sx={{
-                        color: "info",
-                        "&.Mui-checked": {
-                          color: "#0e0036"
-                        }
-                      }}
-                    />
-                    <Typography
-                      variant="subtitle2"
-                      component="label"
-                      sx={{ color: "#000039" }}
-                    >
-                      ESTOQUE
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      sx={{
-                        marginLeft: "20%",
-                        marginTop: "6%",
-                        width: "200px"
-                      }}
-                      color={"info"}
-                      variant="contained"
-                      type="submit"
-                    >
-                      Acessar
-                    </Button>
-                  </Grid>
+              <Grid container sx={{ marginTop: "2%" }} spacing={1}>
+                <Grid item xs={12}>
+                  <Typography
+                    variant="h2"
+                    component="span"
+                    sx={{ color: "#FFFF" }}
+                  >
+                    Faça seu Login!
+                  </Typography>
                 </Grid>
-              </Box>
+                <Grid item xs={12}>
+                  <VTextField
+                    name="user"
+                    label="Usuario"
+                    color="#FFF"
+                    sx={{ width: "90%" }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <VTextField
+                    name="pass"
+                    label="Senha"
+                    color="#FFF"
+                    type="password"
+                    sx={{ width: "90%" }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <Radio
+                    checked={selectedModule === MIABACOLHIMENTO}
+                    onChange={handleChange}
+                    value={MIABACOLHIMENTO}
+                    sx={{
+                      "&.Mui-checked": {
+                        color: "#0abfbc"
+                      }
+                    }}
+                  />
+                  <Typography
+                    variant="h4"
+                    component="span"
+                    sx={{ color: "#000039" }}
+                  >
+                    ACOLHIMENTO
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Radio
+                    checked={selectedModule === MIABESTOQUE}
+                    onChange={handleChange}
+                    value={MIABESTOQUE}
+                    sx={{
+                      "&.Mui-checked": {
+                        color: "#0abfbc"
+                      }
+                    }}
+                  />
+                  <Typography
+                    variant="h4"
+                    component="span"
+                    sx={{ color: "#000039" }}
+                  >
+                    ESTOQUE
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    sx={{
+                      marginLeft: "20%",
+                      marginTop: "6%",
+                      width: "200px"
+                    }}
+                    color="primary"
+                    variant="contained"
+                    type="submit"
+                  >
+                    Acessar
+                  </Button>
+                </Grid>
+              </Grid>
             </Form>
           </Grid>
         </Grid>

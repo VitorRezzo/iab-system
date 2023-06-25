@@ -1,6 +1,6 @@
 import { TablePatient } from "./TablePatient";
-import { Paper } from "@mui/material";
-import Texturapaper from "../../../../assets/img/Texturapaper.jpg";
+import { Paper, Typography } from "@mui/material";
+import PaperTexture from "../../../../assets/img/PaperTexture.svg";
 import { BoxMark } from "../../../../shared/styles/reception-styles/StylecadP";
 import { useState } from "react";
 import { TableCampanion } from "./TableCampanion";
@@ -35,12 +35,12 @@ export function TableModel(props) {
           vheight === null ? setVHeight("100%") : setVHeight(null);
         }}
       >
-        {props.name}
+        <Typography variant="h4">{props.name}</Typography>
       </BoxMark>
       <Paper
         sx={{
           marginTop: "-1%",
-          backgroundImage: `url(${Texturapaper})`,
+          backgroundImage: `url(${PaperTexture})`,
           height: vheight === null ? "125px" : "100%",
           padding: "2%",
           marginBottom: vheight === null ? "0" : "5%"

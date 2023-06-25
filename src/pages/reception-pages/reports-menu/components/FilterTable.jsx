@@ -40,7 +40,7 @@ export function FilterTable(props) {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
     ).then((response) => {
-      dispatch(setPatientTable(response));
+      dispatch(setPatientTable(response.data));
     });
   };
 
@@ -60,7 +60,7 @@ export function FilterTable(props) {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
     ).then((response) => {
-      dispatch(setCompanionTable(response));
+      dispatch(setCompanionTable(response.data));
     });
   };
 

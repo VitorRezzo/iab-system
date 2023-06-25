@@ -10,6 +10,7 @@ export const MenuAddCompanion = styled("div")({
   borderRadius: "5px",
   transition: "height 1s ease-out",
   overflow: " hidden",
+
   backgroundColor: " #0CABA8",
   "&:hover": {
     height: "155px"
@@ -29,14 +30,12 @@ export const TitleMenuAcom = styled("div")({
   alignItems: "center",
   marginTop: "2%",
   color: " #fff",
-  fontSize: "1rem",
-  fontFamily: "Lucida Console"
+  fontSize: "1rem"
 });
 
 export const SubTitleMenuAcom = styled("div")({
   color: " #fff",
-  fontSize: "1rem",
-  fontFamily: "Lucida Console"
+  fontSize: "1rem"
 });
 
 export const BoxMark = styled("div")(({ background }) => ({

@@ -1,11 +1,11 @@
 import Chart from "react-apexcharts";
 import React, { useEffect } from "react";
-import { Avatar, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 import { FluxPatients } from "./FluxPatients";
-import TexturaPran from "../../../../assets/img/TexturaPran.jpg";
+import BackgroundPages from "../../../../assets/img/BackgroundPages.svg";
 //import { io } from "socket.io-client";
 import ptbr from "../../../../constants/pt-br.json";
-const BACKGROUND_PAPER = `url(${TexturaPran})`;
+const BACKGROUND_PAPER = `url(${BackgroundPages})`;
 
 export const PieCharts = (props) => {
   const state = {
@@ -83,7 +83,9 @@ export const PieCharts = (props) => {
         backgroundImage: BACKGROUND_PAPER,
         width: "100%",
         paddingTop: "2%",
-        height: "270px"
+        height: "270px",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat"
       }}
     >
       <Chart
@@ -254,7 +256,13 @@ export const ProgressCharts = (props) => {
 
   return (
     <Paper
-      sx={{ backgroundImage: BACKGROUND_PAPER, width: "100%", height: "680px" }}
+      sx={{
+        backgroundImage: BACKGROUND_PAPER,
+        width: "100%",
+        height: "680px",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat"
+      }}
     >
       <Chart options={state} series={state.series} type="radialBar" />
       <FluxPatients />
@@ -329,7 +337,9 @@ export const ColumnCharts = (props) => {
       sx={{
         backgroundImage: BACKGROUND_PAPER,
         width: "100%",
-        height: "390px"
+        height: "390px",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat"
       }}
     >
       <Chart

@@ -102,6 +102,7 @@ export function TablePatient() {
           }}
           sx={{ height: "40px", marginRight: "2%" }}
           variant="contained"
+          component="button"
         >
           Atualizar
         </Button>

@@ -115,7 +115,7 @@ export function TableCampanion() {
       <TableContainer>
         <Table aria-label="collapsible table">
           <TableBody>
-            {Data.companionTable ? (
+            {Data.companionTable !== null ? (
               Data.companionTable.map((value, index) => (
                 <Linhas key={index} data={value} />
               ))

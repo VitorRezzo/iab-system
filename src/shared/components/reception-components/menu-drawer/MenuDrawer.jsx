@@ -29,7 +29,7 @@ import NavigationAco from "./NavigationAco.js";
 import { useNavigate } from "react-router-dom";
 import Mensageiro from "./Mensageiro.jsx";
 import Cookies from "js-cookie";
-import FundoP from "../../../../assets/img/FundoP.jpg";
+import BackgroundMenu from "../../../../assets/img/BackgroundMenu.svg";
 import { useAutenticaUser } from "../../../context/AutenticaUser.jsx";
 import { Tooltip } from "@mui/material";
 let drawerWidth = 240;
@@ -147,7 +147,7 @@ export function MenuDrawer({ children }) {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             overflow: "hidden",
-            backgroundImage: `url(${FundoP})`,
+            backgroundImage: `url(${BackgroundMenu})`,
             backgroundSize: "cover",
             boxSizing: "border-box"
           }

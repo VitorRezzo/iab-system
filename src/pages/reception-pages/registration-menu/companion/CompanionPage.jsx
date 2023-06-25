@@ -123,22 +123,20 @@ export function CompanionPage() {
               <Grid container sx={{ padding: "2%" }} spacing={2}>
                 <Grid item xs={10}>
                   <Typography
-                    sx={{ color: "#085A8C" }}
                     alt="Dados do Acompanhante"
-                    variant="h4"
+                    variant="h1"
                     noWrap
-                    component="div"
+                    component="span"
                   >
                     Ficha do Acompanhante
                   </Typography>
                 </Grid>
                 <Grid item xs={2}>
                   <Typography
-                    sx={{ color: "#085A8C" }}
                     alt="Codigo Acompanhante"
-                    variant="h6"
+                    variant="h3"
                     noWrap
-                    component="div"
+                    component="span"
                   >
                     CDAC - 0000
                   </Typography>
@@ -153,12 +151,7 @@ export function CompanionPage() {
                   <Divider />
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography
-                    sx={{ color: "#085A8C" }}
-                    variant="h6"
-                    noWrap
-                    component="div"
-                  >
+                  <Typography variant="h2" noWrap component="span">
                     Dados Pessoais
                   </Typography>
                 </Grid>
@@ -261,12 +254,7 @@ export function CompanionPage() {
                   <Divider sx={{ marginTop: "2%" }} />
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography
-                    sx={{ color: "#085A8C" }}
-                    variant="h6"
-                    noWrap
-                    component="div"
-                  >
+                  <Typography variant="h2" noWrap component="span">
                     Endereço
                   </Typography>
                 </Grid>

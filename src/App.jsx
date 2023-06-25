@@ -5,18 +5,22 @@ import { LoginPage } from "./pages/login-page/LoginPage";
 import { MenuDrawer } from "./shared/components/reception-components/menu-drawer/MenuDrawer";
 import { AutenticaUserProvider } from "./shared/context/AutenticaUser";
 import { AlertMessageContextProvider } from "./shared/context/AlertMessageContext.jsx";
+import { Theme } from "./shared/theme/theme";
+import "./index.css";
 function App() {
   return (
     <BrowserRouter>
-      <AlertMessageContextProvider>
-        <LoginPage>
-          <AutenticaUserProvider>
-            <MenuDrawer>
-              <Router />
-            </MenuDrawer>
-          </AutenticaUserProvider>
-        </LoginPage>
-      </AlertMessageContextProvider>
+      <Theme>
+        <AlertMessageContextProvider>
+          <LoginPage>
+            <AutenticaUserProvider>
+              <MenuDrawer>
+                <Router />
+              </MenuDrawer>
+            </AutenticaUserProvider>
+          </LoginPage>
+        </AlertMessageContextProvider>
+      </Theme>
     </BrowserRouter>
   );
 }

@@ -1,0 +1,10 @@
+@font-face {
+  font-family: "Nunito-Light";
+  src: local("Nunito-Light"),
+    url("./shared/fonts/Nunito/static/Nunito-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Nunito-Medium";
+  src: local("Nunito-Medium"),
+    url("./shared/fonts/Nunito/static/Nunito-Medium.ttf") format("truetype");
+}

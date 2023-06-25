@@ -9,8 +9,8 @@ import {
   IconButton
 } from "@mui/material";
 
-import TexturaPran from "../../../assets/img/TexturaPran.jpg";
-import FundoP from "../../../assets/img/FundoP.jpg";
+import BackgroundPages from "../../../assets/img/BackgroundPages.svg";
+import BackgroundMenu from "../../../assets/img/BackgroundMenu.svg";
 
 import SaveIcon from "@mui/icons-material/Save";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -54,13 +54,18 @@ export function ChartsPage() {
           <Paper
             sx={{
               padding: "2%",
+              marginTop: "2%",
               width: "95%",
               height: "600px",
-              backgroundImage: `url(${TexturaPran})`,
-              marginTop: "2%"
+              backgroundImage: `url(${BackgroundPages})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat"
             }}
             elevation={5}
           >
+            <Typography variant="h1" noWrap component="span">
+              Gráficos
+            </Typography>
             <Form
               ref={formRef}
               onSubmit={(data) => {
@@ -98,62 +103,51 @@ export function ChartsPage() {
           </Paper>
         </Grid>
         <Grid item xs={1}>
-          <Paper
-            sx={{
-              position: "fixed",
-              backgroundImage: `url(${FundoP})`,
-              backgroundSize: "cover",
-              height: "40%",
-              width: "8%",
-              marginTop: "6%"
-            }}
-            elevation={1}
-          >
-            <Grid item xs={1}>
-              <Paper
+          <Grid item xs={1}>
+            <Paper
+              sx={{
+                position: "fixed",
+                marginTop: "4%",
+                backgroundImage: `url(${BackgroundMenu})`,
+                backgroundSize: "cover",
+                height: "40%",
+                width: "8%"
+              }}
+              elevation={1}
+            >
+              <Box
                 sx={{
-                  position: "fixed",
-                  backgroundImage: `url(${FundoP})`,
-                  backgroundSize: "cover",
-                  height: "40%",
-                  width: "8%"
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  height: "100%",
+                  width: "100%"
                 }}
-                elevation={1}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    height: "100%",
-                    width: "100%"
-                  }}
+                <Typography sx={{ color: "#FFF" }}>Menu</Typography>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={() => formRef.current?.submitForm()}
+                  sx={{ marginTop: "10%", color: "#fff" }}
+                  startIcon={<SaveIcon />}
                 >
-                  <Typography sx={{ color: "#FFF" }}>Menu</Typography>
-                  <Button
-                    color="secondary"
-                    variant="contained"
-                    onClick={() => formRef.current?.submitForm()}
-                    sx={{ marginTop: "10%", color: "#fff" }}
-                    startIcon={<SaveIcon />}
-                  >
-                    Gerar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    sx={{ marginTop: "10%", color: "#fff" }}
-                    startIcon={<InsertDriveFileOutlinedIcon />}
-                  >
-                    PDF
-                  </Button>
-                  <IconButton sx={{ marginTop: "80%", color: "#fff" }}>
-                    <KeyboardBackspaceOutlinedIcon />
-                  </IconButton>
-                </Box>
-              </Paper>
-            </Grid>
-          </Paper>
+                  Gerar
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  sx={{ marginTop: "10%", color: "#fff" }}
+                  startIcon={<InsertDriveFileOutlinedIcon />}
+                >
+                  PDF
+                </Button>
+                <IconButton sx={{ marginTop: "80%", color: "#fff" }}>
+                  <KeyboardBackspaceOutlinedIcon />
+                </IconButton>
+              </Box>
+            </Paper>
+          </Grid>
         </Grid>
       </Grid>
     </Box>

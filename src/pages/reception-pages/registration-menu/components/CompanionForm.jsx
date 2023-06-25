@@ -368,42 +368,39 @@ export function CompanionForm(props) {
           elevation={5}
         >
           <Grid container spacing={0.5}>
-            <Grid item xs={2}>
+            <Grid item xs={12}>
               <img
                 src={PinoAcom}
                 style={{
-                  marginTop: "-20%",
-                  marginLeft: "2%",
                   width: "55px",
                   height: "55px"
                 }}
               />
             </Grid>
-
-            <Typography
-              sx={{ marginTop: "5%", marginLeft: "15%", color: "#085A8C" }}
-              alt="Dados do Acompanhante"
-              variant="h4"
-              noWrap
-              component="span"
-            >
-              Ficha do Acompanhante {props.position + 1}
-            </Typography>
-
-            <Grid item xs={12}>
-              <IconButton
+            <Grid item xs={11}>
+              <Typography
                 sx={{
-                  marginLeft: "95%",
-                  marginTop: "-8%"
+                  display: "flex",
+                  justifyContent: "center"
                 }}
+                alt="Dados do Acompanhante"
+                variant="h1"
+                noWrap
+                component="span"
+              >
+                Ficha do Acompanhante {props.position + 1}
+              </Typography>
+            </Grid>
+            <Grid item xs={1}>
+              <IconButton
                 onClick={() =>
                   vheight !== 0 ? setVHeight(0) : setVHeight(HeightPaper)
                 }
               >
                 {vheight !== 0 ? (
-                  <KeyboardArrowDownIcon />
+                  <KeyboardArrowDownIcon color="primary" />
                 ) : (
-                  <KeyboardArrowUpIcon />
+                  <KeyboardArrowUpIcon color="primary" />
                 )}
               </IconButton>
             </Grid>
@@ -427,9 +424,8 @@ export function CompanionForm(props) {
               <Grid item xs={10} />
               <Grid item xs={2}>
                 <Typography
-                  sx={{ color: "#085A8C" }}
                   alt="Codigo Acompanhante"
-                  variant="h6"
+                  variant="h3"
                   noWrap
                   component="span"
                 >
@@ -448,12 +444,7 @@ export function CompanionForm(props) {
                 <Divider />
               </Grid>
               <Grid item xs={12}>
-                <Typography
-                  sx={{ color: "#085A8C" }}
-                  variant="h6"
-                  noWrap
-                  component="span"
-                >
+                <Typography variant="h2" noWrap component="span">
                   Dados Pessoais
                 </Typography>
               </Grid>
@@ -576,12 +567,7 @@ export function CompanionForm(props) {
                 <Divider sx={{ marginTop: "2%" }} />
               </Grid>
               <Grid item xs={12}>
-                <Typography
-                  sx={{ color: "#085A8C" }}
-                  variant="h6"
-                  noWrap
-                  component="span"
-                >
+                <Typography variant="h2" noWrap component="span">
                   Endereço
                 </Typography>
               </Grid>

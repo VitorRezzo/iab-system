@@ -35,7 +35,7 @@ import { VDatePick } from "../../../../shared/components/form-unform/VDatePick.t
 import { MoveTable } from "../components/MoveTable";
 
 import ListProcedimento from "../../../../constants/ListProcedimento.json";
-import TexturaPran from "../../../../assets/img/TexturaPran.jpg";
+import BackgroundPages from "../../../../assets/img/BackgroundPages.svg";
 
 import { Form } from "@unform/web";
 import { useParams } from "react-router-dom";
@@ -181,11 +181,18 @@ export function MovementPage() {
     <Box sx={{ padding: "4%", marginTop: "2%" }}>
       <AlertMessage />
 
-      <Paper elevation={5} sx={{ backgroundImage: `url(${TexturaPran})` }}>
+      <Paper
+        elevation={5}
+        sx={{
+          backgroundImage: `url(${BackgroundPages})`,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
         <Grid container spacing={2} sx={{ padding: "2%" }}>
           <Grid item xs={12}>
             <Grid item xs={12}>
-              <Typography variant="h4" sx={{ color: "#085A8C" }}>
+              <Typography variant="h1" noWrap component="span">
                 Movimentação
               </Typography>
             </Grid>
@@ -222,7 +229,7 @@ export function MovementPage() {
                           marginRight: "1%"
                         }}
                       />
-                      <Typography variant="h5">Dados</Typography>
+                      <Typography variant="h2">Dados</Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
@@ -282,7 +289,7 @@ export function MovementPage() {
                           marginRight: "1%"
                         }}
                       />
-                      <Typography variant="h5">Localização</Typography>
+                      <Typography variant="h2">Localização</Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
@@ -370,7 +377,7 @@ export function MovementPage() {
                           marginRight: "1%"
                         }}
                       />
-                      <Typography variant="h5">Data & Hora</Typography>
+                      <Typography variant="h2">Data & Hora</Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
@@ -409,14 +416,13 @@ export function MovementPage() {
               top: "10%",
               left: "40%",
               width: 450,
-              background: "#45aab8"
+              backgroundImage: `url(${BackgroundPages})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat"
             }}
             elevation={5}
           >
-            <Typography
-              variant="h5"
-              sx={{ marginLeft: "15%", color: "#f0f2eb" }}
-            >
+            <Typography variant="h2" sx={{ marginLeft: "15%" }}>
               Escolha um Acompanhante
             </Typography>
             {companionList?.map((value, index) => (
@@ -425,7 +431,7 @@ export function MovementPage() {
                   display: "flex",
                   flexDirection: "column",
                   marginLeft: "2%",
-                  color: "#f0f2eb"
+                  color: "#005bc5"
                 }}
                 component="fieldset"
                 variant="standard"

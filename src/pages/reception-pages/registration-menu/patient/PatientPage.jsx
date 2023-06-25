@@ -36,8 +36,8 @@ import { VAutoComplete } from "../../../../shared/components/form-unform/VAutoCo
 import { VTextFieldMasks } from "../../../../shared/components/form-unform/VTextFieldMasks.tsx";
 import { VDatePick } from "../../../../shared/components/form-unform/VDatePick.tsx";
 
-import GrampoICO from "../../../../assets/img/GrampoICO.png";
-import TexturaPran from "../../../../assets/img/TexturaPran.jpg";
+import Clip from "../../../../assets/img/Clip.svg";
+import BackgroundPages from "../../../../assets/img/BackgroundPages.svg";
 
 import { Form } from "@unform/web";
 import { useNavigate, useParams } from "react-router-dom";
@@ -274,8 +274,10 @@ export function PatientPage() {
             sx={{
               padding: "5%",
               borderRadius: "1%",
-              backgroundImage: `url(${TexturaPran})`,
-              backgroundColor: "#72C1F2 "
+              backgroundImage: `url(${BackgroundPages})`,
+              backgroundColor: "#72C1F2 ",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat"
             }}
             elevation={24}
           >
@@ -289,7 +291,7 @@ export function PatientPage() {
                     width: "125px",
                     height: "135px"
                   }}
-                  src={GrampoICO}
+                  src={Clip}
                 />
               </Grid>
               <Grid item xs={4} />
@@ -310,9 +312,8 @@ export function PatientPage() {
                 >
                   <Grid item xs={10}>
                     <Typography
-                      sx={{ color: "#085A8C" }}
                       alt="Dados do Paciente"
-                      variant="h4"
+                      variant="h1"
                       noWrap
                       component="span"
                     >
@@ -321,9 +322,8 @@ export function PatientPage() {
                   </Grid>
                   <Grid item xs={2}>
                     <Typography
-                      sx={{ color: "#085A8C" }}
                       alt="Codigo Paciente"
-                      variant="h6"
+                      variant="h3"
                       noWrap
                       component="span"
                     >
@@ -340,12 +340,7 @@ export function PatientPage() {
                     <Divider />
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography
-                      sx={{ color: "#085A8C" }}
-                      variant="h6"
-                      noWrap
-                      component="span"
-                    >
+                    <Typography variant="h2" noWrap component="span">
                       Dados Pessoais
                     </Typography>
                   </Grid>
@@ -455,12 +450,7 @@ export function PatientPage() {
                     <Divider sx={{ marginTop: "2%" }} />
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography
-                      sx={{ color: "#085A8C" }}
-                      variant="h6"
-                      noWrap
-                      component="span"
-                    >
+                    <Typography variant="h2" noWrap component="span">
                       Endereço
                     </Typography>
                   </Grid>
@@ -489,12 +479,7 @@ export function PatientPage() {
                     <Divider sx={{ marginTop: "2%" }} />
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography
-                      sx={{ color: "#085A8C" }}
-                      variant="h6"
-                      noWrap
-                      component="span"
-                    >
+                    <Typography variant="h2" noWrap component="span">
                       Dados Complementares
                     </Typography>
                   </Grid>

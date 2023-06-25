@@ -1,5 +1,5 @@
 import React from "react";
-import FundoP from "../../../../assets/img/FundoP.jpg";
+import BackgroundMenu from "../../../../assets/img/BackgroundMenu.svg";
 import SaveIcon from "@mui/icons-material/Save";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
@@ -19,7 +19,7 @@ export function SideBarMenu(props) {
   return (
     <Paper
       sx={{
-        backgroundImage: `url(${FundoP})`,
+        backgroundImage: `url(${BackgroundMenu})`,
         backgroundSize: "cover",
         height: "300px",
         width: "100%",

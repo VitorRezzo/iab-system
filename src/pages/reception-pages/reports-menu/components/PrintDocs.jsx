@@ -10,7 +10,7 @@ export function PrintDocs(props) {
   const PatientDocs = () => {
     return (
       <>
-        {Data.patientTable.data.map((row, index) => (
+        {Data.patientTable.map((row, index) => (
           <Box
             key={index}
             sx={{
@@ -306,7 +306,7 @@ export function PrintDocs(props) {
   const CompanionDocs = () => {
     return (
       <>
-        {Data.companionTable.data.map((row, index) => (
+        {Data.companionTable.map((row, index) => (
           <Box
             key={index}
             sx={{

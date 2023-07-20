@@ -7,7 +7,7 @@ import moment from "moment";
 import {
   PieCharts,
   LineCharts,
-  ProgressCharts,
+  FluxPatiensCharts,
   ColumnCharts
 } from "./components/Charts";
 
@@ -15,13 +15,12 @@ export function DashboardPage() {
   const [pieResidents, setPieResidents] = useState();
   const [columnResidents, setColumnResidents] = useState();
   const [lineMoviments, setLineMoviments] = useState();
-  const [progressResidents, setProgressResidents] = useState();
+
   const countAllResidentsByGender = async () => {
     await ApiServer.get("/count-allresidents-bygender", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
       setPieResidents(response.data);
-      setProgressResidents(response.data);
     });
   };
 
@@ -56,25 +55,19 @@ export function DashboardPage() {
   }, []);
   return (
     <Box>
-      <Grid container sx={{ marginTop: "0.5%" }} spacing={1}>
-        <Grid item xs={8.5}>
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
-              <PieCharts value={pieResidents} />
-            </Grid>
-            <Grid item xs={6}>
-              <LineCharts value={lineMoviments} />
-            </Grid>
-            <Grid item xs={12}>
-              <ColumnCharts value={columnResidents} />
-            </Grid>
+      <Grid container sx={{ marginTop: "0.5%" }} maxWidth="lg" spacing={1}>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={6}>
+            <PieCharts value={pieResidents} />
           </Grid>
-        </Grid>
-        <Grid item xs={3.5}>
-          <Grid container>
-            <Grid item xs={12}>
-              <ProgressCharts value={progressResidents} />
-            </Grid>
+          <Grid item xs={12} sm={6}>
+            <LineCharts value={lineMoviments} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <ColumnCharts value={columnResidents} />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <FluxPatiensCharts />
           </Grid>
         </Grid>
       </Grid>

@@ -1,5 +1,13 @@
 import React, { useRef, useState } from "react";
-import { Box, Button, Radio, Typography, Grid } from "@mui/material";
+import {
+  Box,
+  Button,
+  Radio,
+  Typography,
+  Grid,
+  Modal,
+  Paper
+} from "@mui/material";
 import BrunnoLogo from "../../assets/img/BrunnoLogo.svg";
 import BackgroundMenu from "../../assets/img/BackgroundMenu.svg";
 import ApiServer from "../../services/ApiServer.js";
@@ -7,33 +15,44 @@ import Cookies from "js-cookie";
 import { VTextField } from "../../shared/components/form-unform/VTextField.tsx";
 import { Form } from "@unform/web";
 import { useNavigate } from "react-router-dom";
-
+import { useMediaQuery, useTheme } from "@mui/material";
+import BackgroundPages from "../../assets/img/BackgroundPages.svg";
 const MIABESTOQUE = "IAB ESTOQUE";
 const MIABACOLHIMENTO = "IAB ACOLHIMENTO";
 
 export function LoginPage({ children }) {
+  const theme = useTheme();
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isLandScapeScreen = useMediaQuery(
+    theme.breakpoints.between("sm", "md")
+  );
+
   const url = window.location.pathname;
-  const formRef = useRef(null);
   const [selectedModule, setSelectedModule] = useState(MIABACOLHIMENTO);
+  const formRef = useRef(null);
   const navigate = useNavigate();
   const handleChange = (event) => {
     setSelectedModule(event.target.value);
   };
-  const LoginUsuario = async (v) => {
+
+  const Login = async (data) => {
     await ApiServer.post("/login-user", {
-      username: v.user,
-      password: v.pass
-    }).then((response) => {
-      if (response.data.auth) {
-        Cookies.set(process.env.REACT_APP_TOKEN, response.data.token);
-        localStorage.setItem("--auth", response.data.auth);
-        localStorage.setItem("--username", response.data.username);
-        navModule();
-      } else {
+      username: data.user,
+      password: data.pass
+    })
+      .then((response) => {
+        if (response.data.auth) {
+          Cookies.set(process.env.REACT_APP_TOKEN, response.data.token);
+          localStorage.setItem("--auth", response.data.auth);
+          localStorage.setItem("--username", response.data.username);
+          setIsOpenModal(true);
+        }
+      })
+      .catch((error) => {
         localStorage.setItem("--auth", false);
-        alert(response.data.message);
-      }
-    });
+        alert(error.response.data.message);
+      });
   };
 
   const navModule = () => {
@@ -42,6 +61,7 @@ export function LoginPage({ children }) {
     } else {
       navigate("/Acolhimento_dashboard");
     }
+    setIsOpenModal(false);
   };
 
   if (url !== "/") return <>{children}</>;
@@ -50,121 +70,109 @@ export function LoginPage({ children }) {
     <Box
       component="div"
       sx={{
-        justifyContent: "center",
         display: "flex",
-        width: "100%",
-        height: "100%",
-        flexDirection: "column",
+        justifyContent: "center",
         alignItems: "center",
-        minHeight: "100vh"
+        width: "100%",
+        height: "100vh"
       }}
     >
       <Box
         sx={{
-          width: "50%",
-          height: "340px",
+          width: "80%",
+          maxWidth: isLandScapeScreen ? "500px" : "600px",
+          maxHeight: isSmallScreen ? "500px" : "255px",
+          padding: "2%",
           borderRadius: "10px",
           backgroundImage: `url(${BackgroundMenu})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat"
         }}
       >
-        <Grid container>
-          <Grid item xs={6}>
+        <Grid container spacing={0.5}>
+          <Grid item xs={12} sm={6}>
             <img
               src={BrunnoLogo}
               style={{
-                height: "340px",
-                marginTop: "-0.8%",
-                width: "90%",
-                borderRadius: "10px",
-                border: "2px solid #FFF"
+                width: "100%",
+                marginTop: isSmallScreen ? "0%" : "-5%",
+                marginLeft: isSmallScreen ? "2%" : "-5%",
+                height: isSmallScreen ? "82%" : "100%",
+                maxHeight: "325px"
               }}
               alt="imagem Brunno no login"
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} marginTop={isSmallScreen ? "-15%" : "-2%"} sm={6}>
             <Form
               ref={formRef}
               onSubmit={(data) => {
-                LoginUsuario(data);
+                Login(data);
               }}
             >
-              <Grid container sx={{ marginTop: "2%" }} spacing={1}>
-                <Grid item xs={12}>
+              <Grid
+                container
+                marginTop={isLandScapeScreen ? "5%" : "2%"}
+                sx={{
+                  borderRadius: "10px",
+
+                  boxShadow: "0 8px 40px 0 #0044ff",
+                  marginBottom: "3%",
+                  width: "95%",
+                  marginLeft: "3%"
+                }}
+                spacing={2}
+              >
+                <Grid item xs={12} sm={6}>
                   <Typography
                     variant="h2"
-                    component="span"
-                    sx={{ color: "#FFFF" }}
+                    sx={{
+                      color: "#bdd1de",
+                      whiteSpace: "nowrap",
+                      fontSize: isSmallScreen
+                        ? "16px"
+                        : isLandScapeScreen
+                        ? "16px"
+                        : "28px"
+                    }}
                   >
                     Faça seu Login!
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={11.5}>
                   <VTextField
                     name="user"
                     label="Usuario"
                     color="#FFF"
-                    sx={{ width: "90%" }}
+                    variant="standard"
+                    size="small"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={11.5}>
                   <VTextField
                     name="pass"
                     label="Senha"
                     color="#FFF"
                     type="password"
-                    sx={{ width: "90%" }}
+                    variant="standard"
+                    size="small"
                   />
                 </Grid>
-                <Grid item xs={6}>
-                  <Radio
-                    checked={selectedModule === MIABACOLHIMENTO}
-                    onChange={handleChange}
-                    value={MIABACOLHIMENTO}
-                    sx={{
-                      "&.Mui-checked": {
-                        color: "#0abfbc"
-                      }
-                    }}
-                  />
-                  <Typography
-                    variant="h4"
-                    component="span"
-                    sx={{ color: "#000039" }}
-                  >
-                    ACOLHIMENTO
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Radio
-                    checked={selectedModule === MIABESTOQUE}
-                    onChange={handleChange}
-                    value={MIABESTOQUE}
-                    sx={{
-                      "&.Mui-checked": {
-                        color: "#0abfbc"
-                      }
-                    }}
-                  />
-                  <Typography
-                    variant="h4"
-                    component="span"
-                    sx={{ color: "#000039" }}
-                  >
-                    ESTOQUE
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
+
+                <Grid item xs={12} sm={6}>
                   <Button
                     sx={{
-                      marginLeft: "20%",
-                      marginTop: "6%",
-                      width: "200px"
+                      marginTop: isSmallScreen ? "2%" : "25%",
+                      marginLeft: isSmallScreen ? "0%" : "50%",
+                      width: "100%",
+                      marginBottom: "4%",
+                      color: "#bdd1de",
+                      ":hover": {
+                        background: "#092b5a",
+                        color: "#00fff2"
+                      }
                     }}
-                    color="primary"
-                    variant="contained"
-                    type="submit"
+                    onClick={() => formRef.current?.submitForm()}
                   >
                     Acessar
                   </Button>
@@ -173,6 +181,130 @@ export function LoginPage({ children }) {
             </Form>
           </Grid>
         </Grid>
+        <Modal
+          open={isOpenModal}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Paper
+            sx={{
+              width: "90%",
+              maxWidth: "400px",
+              height: "200px",
+              padding: "2%",
+              backgroundImage: `url(${BackgroundPages})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat"
+            }}
+            elevation={2}
+          >
+            <Grid container spacing={2}>
+              <Grid
+                item
+                xs={12}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Typography
+                  variant="h2"
+                  component="span"
+                  sx={{
+                    color: "#000039",
+
+                    fontSize: isSmallScreen
+                      ? "18px"
+                      : isLandScapeScreen
+                      ? "18px"
+                      : "26px"
+                  }}
+                >
+                  Escolha um Ambiente!
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Radio
+                  checked={selectedModule === MIABACOLHIMENTO}
+                  onChange={handleChange}
+                  value={MIABACOLHIMENTO}
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "#0abfbc"
+                    }
+                  }}
+                  size="small"
+                />
+                <Typography
+                  variant="h4"
+                  component="span"
+                  sx={{
+                    color: "#000039",
+                    fontSize: isSmallScreen
+                      ? "12px"
+                      : isLandScapeScreen
+                      ? "12px"
+                      : "18px"
+                  }}
+                >
+                  ACOLHIMENTO
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Radio
+                  checked={selectedModule === MIABESTOQUE}
+                  onChange={handleChange}
+                  value={MIABESTOQUE}
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "#0abfbc"
+                    }
+                  }}
+                  size="small"
+                />
+                <Typography
+                  variant="h4"
+                  component="span"
+                  sx={{
+                    color: "#000039",
+                    fontSize: isSmallScreen
+                      ? "12px"
+                      : isLandScapeScreen
+                      ? "12px"
+                      : "18px"
+                  }}
+                >
+                  ESTOQUE
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: "8%"
+                }}
+              >
+                <Button
+                  onClick={() => setIsOpenModal(false)}
+                  variant="contained"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    navModule();
+                  }}
+                >
+                  Confirmar
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Modal>
       </Box>
     </Box>
   );

@@ -1,98 +1,107 @@
 import Chart from "react-apexcharts";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Paper } from "@mui/material";
 import { FluxPatients } from "./FluxPatients";
 import BackgroundPages from "../../../../assets/img/BackgroundPages.svg";
-//import { io } from "socket.io-client";
+import { useMediaQuery, useTheme } from "@mui/material";
 import ptbr from "../../../../constants/pt-br.json";
 const BACKGROUND_PAPER = `url(${BackgroundPages})`;
 
 export const PieCharts = (props) => {
-  const state = {
-    options: {
-      chart: {
-        type: "donut"
-      },
-      labels: [
-        "Homens",
-        "Mulheres",
-        "Crianças",
-        "Idosos",
-        "Pacientes",
-        "Acompanhantes"
-      ],
-      colors: [
-        "#228dff",
-        "#c91e5a",
-        "#edc951",
-        "#a86b4c",
-        "#00a0b0",
-        "#539fa2"
-      ],
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const state = useMemo(
+    () => ({
+      options: {
+        chart: {
+          type: "donut"
+        },
+        labels: [
+          "Homens",
+          "Mulheres",
+          "Crianças",
+          "Idosos",
+          "Pacientes",
+          "Acompanhantes"
+        ],
+        colors: [
+          "#228dff",
+          "#c91e5a",
+          "#edc951",
+          "#a86b4c",
+          "#00a0b0",
+          "#539fa2"
+        ],
 
-      plotOptions: {
-        pie: {
-          donut: {
-            labels: {
-              show: true,
-              name: {
+        plotOptions: {
+          pie: {
+            donut: {
+              labels: {
                 show: true,
-                fontSize: "22px",
-                fontFamily: "Rubik",
-                color: "#dfsda",
-                offsetY: -10
-              },
-              value: {
-                show: true,
-                fontSize: "16px",
-                fontFamily: "Helvetica, Arial, sans-serif",
-                color: undefined,
-                offsetY: 16,
 
-                formatter: function (val) {
-                  return val;
-                }
-              },
-              total: {
-                show: true,
-                label: "Total",
-                color: "#373d3f",
-                formatter: function (w) {
-                  return w.globals.seriesTotals[0] + w.globals.seriesTotals[1];
+                name: {
+                  show: true,
+                  color: "#dfsda",
+                  offsetY: -8
+                },
+                value: {
+                  show: true,
+                  fontSize: isSmallScreen ? "12px" : "16px",
+                  color: undefined,
+                  offsetY: 16,
+
+                  formatter: function (val) {
+                    return val;
+                  }
+                },
+                total: {
+                  show: true,
+                  label: "Total",
+                  fontSize: isSmallScreen ? "12px" : "20px",
+                  color: "#373d3f",
+                  formatter: function (w) {
+                    return (
+                      w.globals.seriesTotals[0] + w.globals.seriesTotals[1]
+                    );
+                  }
                 }
               }
             }
           }
         }
-      }
-    },
+      },
 
-    series: [
-      props.value?.AllMan !== undefined ? props.value.AllMan : 0,
-      props.value?.AllWoman !== undefined ? props.value.AllWoman : 0,
-      props.value?.AllChildren !== undefined ? props.value?.AllChildren : 0,
-      props.value?.AllElderly !== undefined ? props.value.AllElderly : 0,
-      props.value?.AllPatients !== undefined ? props.value.AllPatients : 0,
-      props.value?.AllCompanions !== undefined ? props.value.AllCompanions : 0
-    ]
-  };
+      series: [
+        props.value?.AllMan !== undefined ? props.value.AllMan : 0,
+        props.value?.AllWoman !== undefined ? props.value.AllWoman : 0,
+        props.value?.AllChildren !== undefined ? props.value?.AllChildren : 0,
+        props.value?.AllElderly !== undefined ? props.value.AllElderly : 0,
+        props.value?.AllPatients !== undefined ? props.value.AllPatients : 0,
+        props.value?.AllCompanions !== undefined ? props.value.AllCompanions : 0
+      ]
+    }),
+    [isSmallScreen, props]
+  );
 
   return (
     <Paper
       sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         backgroundImage: BACKGROUND_PAPER,
-        width: "100%",
-        paddingTop: "2%",
-        height: "270px",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat"
       }}
     >
       <Chart
+        style={{
+          width: "100%",
+          minWidth: "280px",
+          maxWidth: "450px"
+        }}
         options={state.options}
         series={state.series}
-        width="100%"
-        height="100%"
         type="donut"
       />
     </Paper>
@@ -112,8 +121,7 @@ export const LineCharts = (props) => {
       type: "line",
       stacked: false,
       locales: [ptbr],
-      defaultLocale: "pt-br",
-      height: 200
+      defaultLocale: "pt-br"
     },
 
     markers: {
@@ -158,113 +166,38 @@ export const LineCharts = (props) => {
 
   return (
     <Paper
-      sx={{ backgroundImage: BACKGROUND_PAPER, width: "100%", height: "280px" }}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+
+        backgroundImage: BACKGROUND_PAPER,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat"
+      }}
     >
       <Chart
+        style={{ width: "100%", minWidth: "250px" }}
         options={state}
         series={state.series}
-        width="100%"
-        height="100%"
+        height="260px"
         type="line"
       />
     </Paper>
   );
 };
 
-export const ProgressCharts = (props) => {
-  const state = {
-    series: props.value?.AllResidents
-      ? [Math.round(props.value?.AllResidents)]
-      : [0],
-    chart: {
-      height: 400,
-      type: "radialBar",
-      toolbar: {
-        show: true
-      }
-    },
-    plotOptions: {
-      radialBar: {
-        startAngle: -135,
-        endAngle: 225,
-        hollow: {
-          margin: 0,
-          size: "70%",
-          background: "#fff",
-          image: undefined,
-          imageOffsetX: 0,
-          imageOffsetY: 0,
-          position: "front",
-          dropShadow: {
-            enabled: true,
-            top: 3,
-            left: 0,
-            blur: 4,
-            opacity: 0.24
-          }
-        },
-        track: {
-          background: "#fff",
-          strokeWidth: "50%",
-          margin: 0, // margin is in pixels
-          dropShadow: {
-            enabled: true,
-            top: -3,
-            left: 0,
-            blur: 4,
-            opacity: 0.35
-          }
-        },
-
-        dataLabels: {
-          show: true,
-          name: {
-            offsetY: -10,
-            show: true,
-            color: "#888",
-            fontSize: "17px"
-          },
-          value: {
-            formatter: function (val) {
-              return val + "%";
-            },
-            color: "#111",
-            fontSize: "36px",
-            show: true
-          }
-        }
-      }
-    },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shade: "dark",
-        type: "horizontal",
-        shadeIntensity: 0.5,
-        gradientToColors: ["#ABE5A1"],
-        inverseColors: true,
-        opacityFrom: 1,
-        opacityTo: 1,
-        stops: [0, 200]
-      }
-    },
-    stroke: {
-      lineCap: "round"
-    },
-    labels: ["Taxa de Ocupação"]
-  };
-
+export const FluxPatiensCharts = () => {
   return (
     <Paper
       sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        flexDirection: "column",
         backgroundImage: BACKGROUND_PAPER,
-        width: "100%",
-        height: "680px",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat"
       }}
     >
-      <Chart options={state} series={state.series} type="radialBar" />
       <FluxPatients />
     </Paper>
   );
@@ -279,23 +212,6 @@ export const ColumnCharts = (props) => {
     */
   }, []);
 
-  const colors = [
-    "#228dff",
-    "#a86b4c",
-    "#09738a",
-    "#c91e5a",
-    "#98173d",
-    "#351330",
-    "#00b34c",
-    "#1c0b2b",
-    "#314c53",
-    "#25857d",
-    "#8f9e6f",
-    "#f67280",
-    "#99b2b7",
-    "#a8a39d"
-  ];
-
   const state = {
     series: [
       {
@@ -303,14 +219,18 @@ export const ColumnCharts = (props) => {
       }
     ],
     chart: {
-      height: 200,
+      height: 100,
       type: "bar"
     },
-    colors,
+    colors: [
+      "#" + Math.floor(Math.random() * 16777215).toString(16),
+      "#" + Math.floor(Math.random() * 16777215).toString(16)
+    ],
     plotOptions: {
       bar: {
         borderRadius: 4,
-        columnWidth: "15%",
+
+        horizontal: true,
         distributed: true
       }
     },
@@ -325,9 +245,8 @@ export const ColumnCharts = (props) => {
         props.value?.pathology !== undefined ? props.value?.pathology : [""],
       labels: {
         style: {
-          colors,
           fontSize: "12px",
-          fontWeight: 600
+          fontWeight: 400
         }
       }
     }
@@ -335,18 +254,17 @@ export const ColumnCharts = (props) => {
   return (
     <Paper
       sx={{
+        display: "flex",
+        alignItems: "center",
         backgroundImage: BACKGROUND_PAPER,
-        width: "100%",
-        height: "390px",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat"
       }}
     >
       <Chart
+        style={{ width: "100%", minWidth: "250px", height: "270px" }}
         options={state}
         series={state.series}
-        width="100%"
-        height="100%"
         type="bar"
       />
     </Paper>

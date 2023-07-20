@@ -14,12 +14,19 @@ const theme = createTheme({
       main: "#0066ff"
     }
   },
+  breakpoints: {
+    values: {
+      xxs: 0,
+      xs: 300,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536
+    }
+  },
   typography: {
     fontFamily: ["Nunito-Light"],
     fontSize: 14,
-    "@media(max-width : 850px )": {
-      fontSize: 8
-    },
     h1: {
       fontFamily: ["Nunito-Medium"],
       color: "#085A8C",
@@ -33,8 +40,10 @@ const theme = createTheme({
     h3: {
       fontFamily: ["Nunito-Light"],
       fontSize: 20,
-
-      color: "#085A8C"
+      color: "#085A8C",
+      "@media(max-width : 600px )": {
+        fontSize: 8
+      }
     },
     h4: {
       fontFamily: ["Nunito-Light"],
@@ -55,9 +64,32 @@ const theme = createTheme({
         fontSize: 11
       },
       "@media(max-width : 510px )": {
-        Maxwidth: "2p x",
-        fontSize: 10,
-        color: "green"
+        fontSize: 10
+      }
+    }
+  },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          fontSize: "12px",
+          whiteSpace: "nowrap",
+          overFlow: "hidden",
+          textOverflow: "ellipsis",
+          "@media(max-width : 400px)": {
+            fontSize: 10
+          }
+        }
+      }
+    },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          color: "#FFF",
+          "@media(max-width : 600px)": {
+            fontSize: 12
+          }
+        }
       }
     }
   }

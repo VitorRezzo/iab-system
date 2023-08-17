@@ -3,11 +3,10 @@ import BrunnoAvatar from "../../../../assets/img/BrunnoAvatar.gif";
 import { Typography, Tooltip } from "@mui/material/";
 import Zoom from "@mui/material/Zoom";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
-import { useAutenticaUser } from "../../../context/AutenticaUser";
 
 export default function Mensageiro() {
   const [open, setOpen] = useState(true);
-  const { userLog } = useAutenticaUser();
+
   let titulo;
   let mensagem;
 
@@ -21,12 +20,11 @@ export default function Mensageiro() {
 
   switch (window.location.pathname) {
     case "/Acolhimento_dashboard":
-      titulo = "Bem vindo  " + userLog;
-      mensagem =
-        "Esse é o Menu Dashboard voçê pode acompanhar os dados dos moradores nos gráficos";
+      titulo = "Tela Dashboard ";
+      mensagem = "Aqui Você pode analisar os dados dos moradores nos gráficos";
       break;
     case "/cadastro/paciente/:idP":
-      titulo = "Menu Cadastro";
+      titulo = "Tela Cadastro Pciente";
       mensagem =
         "Para adcionar um novo Paciente e Acompanhantes preencha os campos!     ";
       break;

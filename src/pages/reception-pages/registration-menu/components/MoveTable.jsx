@@ -171,7 +171,7 @@ const Lista = (props) => {
           <Avatar
             src={
               props.dados.Patient.Avatar?.url
-                ? "/files/" + props.dados.Patient.Avatar?.url
+                ? `${process.env.REACT_APP_BACKEND}/files/${props.dados.Patient.Avatar?.url}`
                 : ""
             }
             sx={{
@@ -227,7 +227,11 @@ const Lista = (props) => {
               {props.dados.Companions?.map((value, index) => (
                 <Box key={index}>
                   <Avatar
-                    src={value.Avatar?.url ? "/files/" + value.Avatar.url : ""}
+                    src={
+                      value.Avatar?.url
+                        ? `${process.env.REACT_APP_BACKEND}/files/${value.Avatar?.url}`
+                        : ""
+                    }
                     sx={{
                       width: "25px",
                       height: "25px",

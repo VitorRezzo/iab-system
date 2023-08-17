@@ -53,14 +53,15 @@ import { CameraFileMenu } from "../../../../shared/components/reception-componen
 import { setImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
 import {
   removeDataCapanionForm,
-  setDecrementAmoutForm
+  setDecrementAmoutForm,
+  setDataCompanionForm
 } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
 import {
   removeImageMultUrls,
   resetImageMultUrls
 } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
 import { useDispatch, useSelector } from "react-redux";
-import URLToFile from "../../../../shared/features/URLToFile";
+import UploadImageFile from "../../../../shared/feature/UploadImageFile";
 
 export function CompanionForm(props) {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
@@ -95,7 +96,9 @@ export function CompanionForm(props) {
 
       dispatch(
         setImageMultUrls(
-          response?.Avatar ? "/files/" + response.Avatar?.url : ""
+          response?.Avatar !== null
+            ? `${process.env.REACT_APP_BACKEND}/files/${response.Avatar.url}`
+            : ""
         )
       );
 
@@ -132,17 +135,14 @@ export function CompanionForm(props) {
   };
 
   const registerCompanion = async (dataform) => {
-    const imageFilename = URLToFile.convertUrlToFile(
-      dataImage.imageMultUrls[props.position]
-    );
-    const url = await ApiServer.post(
-      `/upload-avatar/${dataform.cpf}`,
-      imageFilename
-    ).then((response) => {
-      return response.data;
-    });
+    if (dataImage.imageMultUrls[props.position] !== undefined) {
+      UploadImageFile.createUrl(
+        dataform,
+        dataImage.imageMultUrls[props.position],
+        dataform.cpf
+      );
+    }
 
-    dataform.avatarurl = url;
     dataform.PatientId = idPatient;
     await ApiServer.post("/register-companion", dataform, {
       headers: {
@@ -152,7 +152,10 @@ export function CompanionForm(props) {
   };
 
   const handleSaveFile = (position, data) => {
-    if (dataImage.imageMultUrls[position - 1] === undefined) {
+    if (
+      dataImage.imageMultUrls[position - 1] === undefined &&
+      position - 1 > 0
+    ) {
       setMessageAlert("Favor Gravar Ficha " + position + " !");
       setOpenMessageAlert(true);
       setTypeAlert("warning");
@@ -435,7 +438,11 @@ export function CompanionForm(props) {
               <Grid item xs={4} />
 
               <Grid item xs={4}>
-                <CameraFileMenu type="mult" position={props.position} />
+                <CameraFileMenu
+                  type="mult"
+                  position={props.position}
+                  id={idPatient}
+                />
               </Grid>
 
               <Grid item xs={4} />

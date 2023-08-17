@@ -1,10 +1,11 @@
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
-import { Divider, ListItemIcon } from "@mui/material";
-import MultipleStopIcon from "@mui/icons-material/MultipleStop";
+import * as React from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+
 export function FluxPatients() {
   const listPat = [
     {
@@ -52,26 +53,32 @@ export function FluxPatients() {
   ];
 
   return (
-    <List sx={{ width: "100%" }}>
-      {listPat.map((dados, index) => (
-        <ListItem key={index}>
-          <ListItemAvatar sx={{ width: "100px" }}>
-            <Avatar></Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={dados.name} sx={{ width: "100px" }} />
-          <ListItemText primary={dados.status} />
-          <ListItemIcon sx={{ width: "100px" }}>
-            <MultipleStopIcon
-              sx={{
-                color: dados.color
-              }}
-            />
-          </ListItemIcon>
-          <ListItemText primary={dados.type} sx={{ width: "100px" }} />
-          <ListItemText primary={dados.data} sx={{ width: "100px" }} />
-          <Divider sx={{ color: "blue" }} />
-        </ListItem>
-      ))}
-    </List>
+    <TableContainer>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Paciente</TableCell>
+            <TableCell align="left">Status</TableCell>
+            <TableCell align="left">Atividade</TableCell>
+            <TableCell align="left">Data & Hora</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {listPat.map((row, index) => (
+            <TableRow
+              key={index}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell>
+              <TableCell align="left">{row.status}</TableCell>
+              <TableCell align="left">{row.type}</TableCell>
+              <TableCell align="left">{row.data}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

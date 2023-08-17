@@ -210,7 +210,7 @@ function Linhas(patient) {
           <Avatar
             src={
               patient.data.Avatar.url !== null
-                ? "/files/" + patient.data?.Avatar.url
+                ? `${process.env.REACT_APP_BACKEND}/files/${patient.data?.Avatar.url}`
                 : ""
             }
             sx={{ width: "60px", height: "60px" }}

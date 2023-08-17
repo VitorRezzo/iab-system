@@ -1,4 +1,3 @@
-import FileBase64 from "react-file-base64";
 import {
   removeImageMultUrls,
   setImageUrl
@@ -17,22 +16,23 @@ export function ImageFile(props) {
     }
   };
 
-  const insertImage = (e) => {
-    dispatch(setImageUrl(e.base64));
+  const insertImage = (imagedata) => {
+    dispatch(setImageUrl(imagedata));
   };
 
-  const insertMultImage = (e) => {
+  const insertMultImage = (imagedata) => {
     removeImage();
-    dispatch(setImageMultUrls([e.base64]));
+    dispatch(setImageMultUrls(imagedata));
   };
 
   return (
     <div style={{ display: "none" }}>
-      <FileBase64
+      <input
         type="file"
-        multiple={false}
-        onDone={(e) => {
-          props.type === "mult" ? insertMultImage(e) : insertImage(e);
+        onChange={(e) => {
+          props.type === "mult"
+            ? insertMultImage(URL.createObjectURL(e.target.files[0]))
+            : insertImage(URL.createObjectURL(e.target.files[0]));
         }}
       />
     </div>

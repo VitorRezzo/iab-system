@@ -30,19 +30,28 @@ const theme = createTheme({
     h1: {
       fontFamily: ["Nunito-Medium"],
       color: "#085A8C",
-      fontSize: 35
+      fontSize: 35,
+      "@media(max-width : 700px )": {
+        fontSize: 28
+      }
     },
     h2: {
       fontFamily: ["Nunito-Light"],
       fontSize: 26,
-      color: "#085A8C"
+      color: "#085A8C",
+      "@media(max-width : 600px )": {
+        fontSize: 18
+      },
+      "@media(max-width : 700px )": {
+        fontSize: 18
+      }
     },
     h3: {
       fontFamily: ["Nunito-Light"],
       fontSize: 20,
       color: "#085A8C",
       "@media(max-width : 600px )": {
-        fontSize: 8
+        fontSize: 16
       }
     },
     h4: {
@@ -85,7 +94,6 @@ const theme = createTheme({
     MuiInput: {
       styleOverrides: {
         root: {
-          color: "#FFF",
           "@media(max-width : 600px)": {
             fontSize: 12
           }

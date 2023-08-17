@@ -40,6 +40,7 @@ export function CameraFileMenu(props) {
             height: "250px"
           }}
         />
+
         <Tooltip title="Tirar Foto">
           <IconButton
             sx={{

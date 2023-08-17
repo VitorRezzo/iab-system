@@ -29,8 +29,7 @@ import { SideBarMenu } from "../../../../shared/components/reception-components/
 import { CameraFileMenu } from "../../../../shared/components/reception-components/camera-file-menu/CameraFileMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { setImageUrl } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
-import URLToFile from "../../../../shared/features/URLToFile";
-
+import UploadImageFile from "../../../../shared/feature/UploadImageFile";
 export function CompanionPage() {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
     useAlertMessageContext();
@@ -54,7 +53,7 @@ export function CompanionPage() {
       dispatch(
         setImageUrl(
           response.data.Avatar !== null
-            ? "/files/" + response.data.Avatar.url
+            ? `${process.env.REACT_APP_BACKEND}/files/${response.data.Avatar.url}`
             : ""
         )
       );
@@ -70,16 +69,10 @@ export function CompanionPage() {
   }, [idCompanion]);
 
   const handleSave = async (data) => {
-    const imageFilename = URLToFile.convertUrlToFile(dataImage.imageUrl);
-    if (imageFilename !== undefined) {
-      const url = await ApiServer.post(
-        `/upload-avatar/${datacompanion.cpf}`,
-        imageFilename
-      ).then((response) => {
-        return response.data;
-      });
-      data.avatarurl = url;
+    if (dataImage.imageUrl !== undefined) {
+      UploadImageFile.createUrl(data, dataImage.imageUrl, datacompanion.cpf);
     }
+
     data.AvatarId = datacompanion.AvatarId;
     data.id = idCompanion;
     data.StatusId = datacompanion.StatusId;

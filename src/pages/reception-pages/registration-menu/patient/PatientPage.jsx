@@ -60,8 +60,7 @@ import {
   setAmoutForm,
   setIncremetAmoutForm
 } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
-import URLToFile from "../../../../shared/features/URLToFile";
-
+import UploadImageFile from "../../../../shared/feature/UploadImageFile";
 export function PatientPage() {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
     useAlertMessageContext();
@@ -94,7 +93,7 @@ export function PatientPage() {
       dispatch(
         setImageUrl(
           response.data.Avatar !== null
-            ? "/files/" + response.data.Avatar.url
+            ? `${process.env.REACT_APP_BACKEND}/files/${response.data.Avatar.url}`
             : ""
         )
       );
@@ -123,17 +122,9 @@ export function PatientPage() {
   };
 
   const handleSave = async (data) => {
-    const imageFilename = URLToFile.convertUrlToFile(dataImage.imageUrl);
     if (idPatient === ":idPatient") {
-      if (imageFilename !== undefined) {
-        const url = await ApiServer.post(
-          `/upload-avatar/${data.cpf}`,
-          imageFilename
-        ).then((response) => {
-          return response.data;
-        });
-
-        data.avatarurl = url;
+      if (dataImage.imageUrl !== undefined) {
+        UploadImageFile.createUrl(data, dataImage.imageUrl, patientData.cpf);
       }
       await ApiServer.post("/register-patients", data, {
         headers: {
@@ -153,15 +144,8 @@ export function PatientPage() {
           console.log(erro);
         });
     } else {
-      if (imageFilename !== undefined) {
-        const url = await ApiServer.post(
-          `/upload-avatar/${patientData.cpf}`,
-          imageFilename
-        ).then((response) => {
-          return response.data;
-        });
-
-        data.avatarurl = url;
+      if (dataImage.imageUrl !== undefined) {
+        UploadImageFile.createUrl(data, dataImage.imageUrl, patientData.cpf);
       }
 
       data.id = patientData.id;
@@ -200,12 +184,9 @@ export function PatientPage() {
       });
 
       for (var i = 0; i <= dataForm.dataCompanionForm.length; i++) {
-        const imageFilename = URLToFile.convertUrlToFile(
-          dataImage.imageMultUrls[i]
-        );
         const url = await ApiServer.post(
           `/upload-avatar/${dataForm.dataCompanionForm[i].cpf}`,
-          imageFilename
+          dataImage.imageMultUrls[i]
         ).then((response) => {
           return response.data;
         });

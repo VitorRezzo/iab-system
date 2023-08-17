@@ -171,7 +171,7 @@ function Linhas(companion) {
           <Avatar
             src={
               companion.data.Avatar?.url !== null
-                ? "/files/" + companion.data.Avatar?.url
+                ? `${process.env.REACT_APP_BACKEND}/files/${companion.data.Avatar?.url}`
                 : ""
             }
             sx={{ width: "60px", height: "60px" }}

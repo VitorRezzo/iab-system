@@ -48,7 +48,8 @@ export function AlertMessageContextProvider({ children }) {
     AlertMessage,
     setMessageAlert,
     setOpenMessageAlert,
-    setTypeAlert
+    setTypeAlert,
+    messagealert
   };
 
   return (

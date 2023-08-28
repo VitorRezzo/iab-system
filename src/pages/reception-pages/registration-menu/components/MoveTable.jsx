@@ -28,7 +28,7 @@ import Cookies from "js-cookie";
 import ApiServer from "../../../../services/ApiServer.js";
 import moment from "moment";
 
-export function MoveTable(props) {
+export function MoveTable() {
   const [data, setData] = useState([]);
   const today = new Date();
 
@@ -44,7 +44,7 @@ export function MoveTable(props) {
     ).then((response) => {
       setData(response.data.map((value) => value));
     });
-  }, [props.moves]);
+  }, []);
 
   const handleSearch = async (data) => {
     await ApiServer.post(

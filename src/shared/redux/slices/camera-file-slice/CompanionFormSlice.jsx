@@ -4,11 +4,15 @@ const companionFormSlice = createSlice({
   name: "companionFormSlice",
   initialState: {
     amoutForm: 0,
-    dataCompanionForm: []
+    dataCompanionForm: [],
+    openDialogForm: false
   },
   reducers: {
     setAmoutForm: (state, action) => {
       state.amoutForm = action.payload;
+    },
+    setOpenDialogForm: (state, action) => {
+      state.openDialogForm = action.payload;
     },
     setIncremetAmoutForm: (state, action) => {
       state.amoutForm += action.payload;
@@ -19,6 +23,9 @@ const companionFormSlice = createSlice({
     setDataCompanionForm: (state, action) => {
       state.dataCompanionForm.push(action.payload);
     },
+    resetCompanionForm: (state, action) => {
+      state.dataCompanionForm.length = action.payload;
+    },
     removeDataCapanionForm: (state, action) => {
       state.dataCompanionForm.splice(action.payload, 1);
     }
@@ -27,10 +34,12 @@ const companionFormSlice = createSlice({
 
 export const {
   setAmoutForm,
+  setOpenDialogForm,
   setIncremetAmoutForm,
   setDecrementAmoutForm,
   setDataCompanionForm,
-  removeDataCapanionForm
+  removeDataCapanionForm,
+  resetCompanionForm
 } = companionFormSlice.actions;
 
 export const companionFormReducer = companionFormSlice.reducer;

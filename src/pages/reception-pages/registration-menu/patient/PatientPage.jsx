@@ -44,7 +44,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   MenuAddCompanion,
   TitleMenuAcom,
-  SubTitleMenuAcom,
   SubMenuCompanion
 } from "../../../../shared/styles/reception-styles/StylecadP.jsx";
 
@@ -58,7 +57,8 @@ import {
 } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
 import {
   setAmoutForm,
-  setIncremetAmoutForm
+  setIncremetAmoutForm,
+  resetCompanionForm
 } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
 import UploadImageFile from "../../../../shared/feature/UploadImageFile";
 export function PatientPage() {
@@ -73,18 +73,12 @@ export function PatientPage() {
   const dataImage = useSelector((state) => state.cameraFileMenu);
   const dataForm = useSelector((state) => state.companionForm);
   useEffect(async () => {
-    const controller = new AbortController();
-
     if (idPatient !== ":idPatient") {
-      resetForm();
       const response = await ApiServer.post(
         `/get-patients-byid/${idPatient}`,
         null,
         {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-        },
-        {
-          signal: controller.signal
         }
       ).then((response) => {
         return response;
@@ -107,45 +101,57 @@ export function PatientPage() {
 
       formRef.current?.setData(datasPatient);
       setPatientData(response.data);
+
       dispatch(setIncremetAmoutForm(response.data.Companions.length));
     }
-
-    return () => {
-      controller.abort();
-    };
   }, [idPatient]);
+
+  useEffect(() => {
+    return () => resetForm();
+  }, []);
 
   const resetForm = () => {
     dispatch(resetImageMultUrls(0));
     dispatch(setImageUrl(""));
     dispatch(setAmoutForm(0));
+    dispatch(resetCompanionForm(0));
   };
 
   const handleSave = async (data) => {
     if (idPatient === ":idPatient") {
-      if (dataImage.imageUrl !== undefined) {
-        UploadImageFile.createUrl(data, dataImage.imageUrl, patientData.cpf);
+      if (dataImage.imageUrl.includes("blob")) {
+        const url = await UploadImageFile.createUrl(
+          dataImage.imageUrl,
+          data.cpf
+        );
+
+        data.avatarurl = url;
       }
+
       await ApiServer.post("/register-patients", data, {
         headers: {
           "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
         }
       })
         .then(async (res) => {
-          registerCompanion(data.cpf);
+          dataForm.dataCompanionForm !== undefined
+            ? registerCompanion(data.cpf)
+            : null;
           setMessageAlert(res.data.message);
           setOpenMessageAlert(true);
           setTypeAlert("success");
-          setTimeout(() => {
-            navigate(0);
-          }, 4000);
         })
         .catch((erro) => {
           console.log(erro);
         });
     } else {
-      if (dataImage.imageUrl !== undefined) {
-        UploadImageFile.createUrl(data, dataImage.imageUrl, patientData.cpf);
+      if (dataImage.imageUrl.includes("blob")) {
+        const url = await UploadImageFile.createUrl(
+          dataImage.imageUrl,
+          patientData.cpf
+        );
+
+        data.avatarurl = url;
       }
 
       data.id = patientData.id;
@@ -158,56 +164,59 @@ export function PatientPage() {
           "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
         }
       })
-        .then(async (res) => {
+        .then((res) => {
           setMessageAlert(res.data.message);
           setOpenMessageAlert(true);
           setTypeAlert("success");
         })
-        .catch((erro) => {
-          console.log(erro);
+        .catch((error) => {
+          if (error.response.data.message === "Acompanhante Já existe!") {
+            setMessageAlert(res.data.message);
+            setOpenMessageAlert(true);
+            setTypeAlert("success");
+          } else {
+            console.log(error.response.data.response);
+          }
         });
     }
   };
 
   const registerCompanion = async (cpf) => {
-    if (dataForm.dataCompanionForm !== undefined) {
-      const idPatient = await ApiServer.post(
-        "/search-patient-bynameorcpf",
-        { cpf: cpf },
-        {
-          headers: {
-            "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-          }
+    const idP = await ApiServer.post(
+      "/search-patient-bynameorcpf",
+      { cpf: cpf },
+      {
+        headers: {
+          "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
         }
-      ).then((res) => {
-        return res.data[0].id;
-      });
-
-      for (var i = 0; i <= dataForm.dataCompanionForm.length; i++) {
-        const url = await ApiServer.post(
-          `/upload-avatar/${dataForm.dataCompanionForm[i].cpf}`,
-          dataImage.imageMultUrls[i]
-        ).then((response) => {
-          return response.data;
-        });
-        dataForm.dataCompanionForm[i].PatientId = idPatient;
-        dataForm.dataCompanionForm[i].avatarurl = url;
-        await ApiServer.post(
-          "/register-companion",
-          dataForm.dataCompanionForm[i],
-          {
-            headers: {
-              "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-            }
-          }
-        )
-          .then(async (res) => {
-            console.log(res);
-          })
-          .catch((erro) => {
-            console.log(erro);
-          });
       }
+    ).then((res) => {
+      return res.data[0].id;
+    });
+
+    for (let i = 0; i < dataForm.dataCompanionForm.length; i++) {
+      const url = await UploadImageFile.createUrl(
+        dataImage.imageMultUrls[i],
+        dataForm.dataCompanionForm[i]?.cpf
+      );
+      const data = {
+        ...dataForm.dataCompanionForm[i],
+        ...{ avatarurl: url, PatientId: idP }
+      };
+
+      await ApiServer.post("/register-companion", data, {
+        headers: {
+          "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
+        }
+      })
+        .then(() => {
+          setTimeout(() => {
+            navigate(0);
+          }, 4000);
+        })
+        .catch((erro) => {
+          console.log(erro.response);
+        });
     }
   };
 
@@ -524,7 +533,9 @@ export function PatientPage() {
           <MenuAddCompanion>
             <TitleMenuAcom>
               <FcRules size={25} />
-              FICHAS DOS ACOMPANHANTES
+              <Typography variant="h5" noWrap component="span">
+                FICHAS DOS ACOMPANHANTES
+              </Typography>
             </TitleMenuAcom>
             <SubMenuCompanion>
               <Tooltip title="Adcionar Ficha">
@@ -546,9 +557,9 @@ export function PatientPage() {
                   marginTop: "20%"
                 }}
               >
-                <SubTitleMenuAcom>
+                <Typography variant="h5" noWrap component="span">
                   Ficha(s): {dataForm.amoutForm}
-                </SubTitleMenuAcom>
+                </Typography>
               </Box>
             </SubMenuCompanion>
           </MenuAddCompanion>
@@ -563,7 +574,7 @@ export function PatientPage() {
         <CompanionForm
           key={index}
           position={index}
-          state={patientData?.Companions[index] ? "save" : "new"}
+          state={patientData?.Companions[index] !== undefined ? "save" : "new"}
         />
       ))}
     </Box>

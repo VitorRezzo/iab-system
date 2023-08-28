@@ -60,8 +60,7 @@ const theme = createTheme({
     },
     h5: {
       fontFamily: ["Nunito-Light"],
-      fontSize: 16,
-      color: "#085A8C"
+      fontSize: 14
     },
     p: {
       fontFamily: ["Nunito-Light"],

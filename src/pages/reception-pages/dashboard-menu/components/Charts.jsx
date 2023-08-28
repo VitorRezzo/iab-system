@@ -1,6 +1,6 @@
 import Chart from "react-apexcharts";
 import React, { useEffect, useState } from "react";
-import { FluxPatients } from "./FluxPatients";
+import { FluxResidents } from "./FluxResidents";
 import { useMediaQuery, useTheme, Typography } from "@mui/material";
 import ptbr from "../../../../constants/pt-br.json";
 import { BoxChart } from "./BoxChart";
@@ -92,7 +92,7 @@ export const PieCharts = () => {
           minWidth: "200px",
           maxWidth: "450px",
           height: "100vh",
-          maxHeight: isSmallScreen ? "200px" : "270px"
+          maxHeight: isSmallScreen ? "200px" : "295px"
         }}
         options={state.options}
         series={state.series}
@@ -126,6 +126,7 @@ export const ColumnCharts = () => {
     ],
     chart: {
       type: "bar",
+      height: 430,
       toolbar: {
         show: false
       }
@@ -133,24 +134,52 @@ export const ColumnCharts = () => {
 
     plotOptions: {
       bar: {
-        borderRadius: 4,
-        horizontal: false,
-        columnWidth: 20,
-        distributed: true
+        barHeight: "85%",
+        horizontal: true,
+        distributed: true,
+        dataLabels: {
+          position: "bottom"
+        }
       }
     },
     dataLabels: {
-      enabled: true
+      enabled: true,
+      textAnchor: "start",
+      style: {
+        colors: ["#fff"],
+
+        fontWeight: "200"
+      },
+      formatter: function (val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
+      },
+      offsetX: 0,
+      dropShadow: {
+        enabled: true
+      }
     },
+
     legend: {
       show: false
     },
-    xaxis: {
-      categories: column?.pathology !== undefined ? column.pathology : [""],
+    yaxis: {
       labels: {
-        style: {
-          fontSize: "12px",
-          fontWeight: 400
+        show: false
+      }
+    },
+    xaxis: {
+      categories: column?.pathology !== undefined ? column.pathology : [""]
+    },
+    tooltip: {
+      theme: "light",
+      x: {
+        show: true
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return "";
+          }
         }
       }
     }
@@ -162,12 +191,12 @@ export const ColumnCharts = () => {
         style={{
           width: "100%",
           minWidth: "250px",
-          maxHeight: "270px"
+          maxHeight: "350px"
         }}
         options={state}
         series={state.series}
         type="bar"
-        height={260}
+        height={400}
       />
     </BoxChart>
   );
@@ -180,7 +209,6 @@ export const TreemapCharts = () => {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
       setMap(response.data);
-      console.log(response.data);
     });
     /*
     socket.emit("connection");
@@ -205,7 +233,7 @@ export const TreemapCharts = () => {
     },
     series: [
       {
-        data: map
+        data: map ? map : [{ x: "", y: "" }]
       }
     ]
   };
@@ -213,26 +241,29 @@ export const TreemapCharts = () => {
   return (
     <BoxChart>
       <Typography
-        variant="h4"
+        variant="h3"
         sx={{
           display: "flex",
           alignItems: "center",
+          fontWeight: 700,
+
           padding: "1%"
         }}
       >
-        Pacientes Por Municipio
+        Moradores Por Municipio
       </Typography>
       <Chart
         style={{
           width: "100%",
           minWidth: "250px",
-          maxHeight: "270px",
+          maxHeight: "350px",
           paddingLeft: "2.2%"
         }}
         options={state}
         series={state.series}
         type="treemap"
-        height={260}
+        width={"96%"}
+        height={350}
       />
     </BoxChart>
   );
@@ -316,7 +347,7 @@ export const LineCharts = () => {
         style={{ width: "100%", minWidth: "250px" }}
         options={state}
         series={state.series}
-        height="260px"
+        height={350}
         type="area"
       />
     </BoxChart>
@@ -401,10 +432,10 @@ export const DeadCharts = () => {
   );
 };
 
-export const FluxPatiensCharts = () => {
+export const FluxResidentCharts = () => {
   return (
     <BoxChart>
-      <FluxPatients />
+      <FluxResidents />
     </BoxChart>
   );
 };

@@ -1,18 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import {
   Grid,
-  Button,
   Box,
   Paper,
   Typography,
   Divider,
-  IconButton,
-  DialogContent,
-  Dialog,
-  DialogContentText,
-  DialogActions
+  IconButton
 } from "@mui/material";
 
+import ApiServer from "../../../../services/ApiServer.js";
 import Cookies from "js-cookie";
 
 import { ListMuni } from "../../../../constants/ListMuni";
@@ -30,11 +26,8 @@ import LisEstados from "../../../../constants/ListEstados.json";
 import ListFormasUniao from "../../../../constants/ListFormasUniao.json";
 import ListStatusCivil from "../../../../constants/ListStatusCivil.json";
 
-import SaveIcon from "@mui/icons-material/Save";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 import { VTextField } from "../../../../shared/components/form-unform/VTextField.tsx";
 import { VAutoComplete } from "../../../../shared/components/form-unform/VAutoComplete.tsx";
@@ -44,51 +37,37 @@ import { VDatePick } from "../../../../shared/components/form-unform/VDatePick.t
 import PinoAcom from "../../../../assets/img/pino.png";
 
 import { Form } from "@unform/web";
-import { SRButton } from "../../../../shared/styles/reception-styles/StylecadP";
-import ApiServer from "../../../../services/ApiServer.js";
+
 import { useParams } from "react-router-dom";
 import { useAlertMessageContext } from "../../../../shared/context/AlertMessageContext";
 
 import { CameraFileMenu } from "../../../../shared/components/reception-components/camera-file-menu/CameraFileMenu";
 import { setImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
-import {
-  removeDataCapanionForm,
-  setDecrementAmoutForm,
-  setDataCompanionForm
-} from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
-import {
-  removeImageMultUrls,
-  resetImageMultUrls
-} from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 import UploadImageFile from "../../../../shared/feature/UploadImageFile";
-
+import { ButtonsSaveDelete } from "./ButtonsSaveDelete.jsx";
+import { DialogUI } from "./DialogUIForm.jsx";
+import { setDataCompanionForm } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice.jsx";
 export function CompanionForm(props) {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
     useAlertMessageContext();
-
-  const [opendialog, setOpenDialog] = useState(false);
-  const [vheight, setVHeight] = useState(0);
-  const HeightPaper = "140px";
+  const HeightPaper = "146px";
+  const [openForm, setOpenForm] = useState(true);
   const [ageP, setAgeP] = useState(0);
   const { idPatient } = useParams();
   const formRef = useRef(null);
   const dataImage = useSelector((state) => state.cameraFileMenu);
-  const dataCom = useSelector((state) => state.CompanionForm);
+
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    const controller = new AbortController();
-    if (idPatient !== ":idPatient" && props.state !== "new") {
-      dispatch(resetImageMultUrls(0));
+    if (idPatient !== ":idPatient" && props.state === "save") {
       const response = await ApiServer.post(
         `/get-patients-byid/${idPatient}`,
         null,
         {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-        },
-        {
-          signal: controller.signal
         }
       ).then((response) => {
         return response.data.Companions[props.position];
@@ -96,8 +75,8 @@ export function CompanionForm(props) {
 
       dispatch(
         setImageMultUrls(
-          response?.Avatar !== null
-            ? `${process.env.REACT_APP_BACKEND}/files/${response.Avatar.url}`
+          response?.Avatar?.url !== undefined || response?.Avatar?.url !== null
+            ? `${process.env.REACT_APP_BACKEND}/files/${response?.Avatar?.url}`
             : ""
         )
       );
@@ -105,19 +84,16 @@ export function CompanionForm(props) {
       const datasCompanion = {
         ...response,
         status: response?.Status.status,
+        kinship: response?.Patients_Companions.kinship,
         state: response?.Address.state,
         county: response?.Address.county,
         district: response?.Address.district,
         street: response?.Address.street
       };
 
+      dispatch(setDataCompanionForm(datasCompanion));
       formRef.current?.setData(datasCompanion);
     }
-
-    return () => {
-      controller.abort();
-      dispatch(resetImageMultUrls(0));
-    };
   }, [idPatient]);
 
   const handleChangeAge = (newDate) => {
@@ -133,101 +109,86 @@ export function CompanionForm(props) {
       }
     }
   };
-
-  const registerCompanion = async (dataform) => {
-    if (dataImage.imageMultUrls[props.position] !== undefined) {
-      UploadImageFile.createUrl(
-        dataform,
-        dataImage.imageMultUrls[props.position],
-        dataform.cpf
-      );
-    }
-
-    dataform.PatientId = idPatient;
-    await ApiServer.post("/register-companion", dataform, {
-      headers: {
-        "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-      }
-    });
-  };
-
-  const handleSaveFile = (position, data) => {
-    if (
-      dataImage.imageMultUrls[position - 1] === undefined &&
-      position - 1 > 0
-    ) {
-      setMessageAlert("Favor Gravar Ficha " + position + " !");
-      setOpenMessageAlert(true);
-      setTypeAlert("warning");
-    } else {
-      registerCompanion(data);
-      dispatch(setDataCompanionForm([data]));
-      setMessageAlert(`Ficha ${position + 1} foi gravado!`);
-      setOpenMessageAlert(true);
-      setTypeAlert("success");
-    }
-  };
-  const handleRemoveFile = async (position) => {
-    if (dataImage.imageMultUrls[position]) {
-      dispatch(removeImageMultUrls(position));
-    }
-    dispatch(removeDataCapanionForm(position));
-    dispatch(setDecrementAmoutForm(1));
-    setMessageAlert(`Ficha ${position + 1} foi removida `);
-    setOpenMessageAlert(true);
-    setTypeAlert("info");
-  };
-  const removeCompanionAssocitedPatient = async (position) => {
-    if (dataCom.dataCompanionForm[position]?.id !== undefined) {
-      await ApiServer.post(
-        "/search-companion-bynameorcpf",
-        {
-          cpf: datacad[position].cpf
-        },
-        {
-          headers: {
-            "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-          }
-        }
-      ).then(async (res) => {
-        datacad[position].id = res.data[0].id;
-      });
-    }
-    await ApiServer.post(
-      "/remove-companion-associted-patient",
+  const associateCompanionPatient = async (data) => {
+    const idCompanion = await ApiServer.post(
+      "/search-companion-bynameorcpf",
       {
-        id: datacad[position].id,
-        PatientId: idPatient
-      },
-      {
-        headers: {
-          "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
-        }
-      }
-    ).then(async () => {
-      setOpenDialog(false);
-      setMessageAlert("Acompanhante Removido");
-      setOpenMessageAlert(true);
-      setTypeAlert("success");
-      handleRemoveFile(position);
-    });
-  };
-  const associateCompanionPatient = async (idAco) => {
-    await ApiServer.post(
-      "/associate-companion-patient",
-      {
-        id: idAco,
-        PatientId: idPatient
+        cpf: formRef.current.getData().cpf
       },
       {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
-    ).then(() => {
-      setOpenMessageAlert(true);
-      setMessageAlert("Acompanhante Associado ao Paciente!");
-      setTypeAlert("success");
+    ).then((response) => {
+      return response.data[0].id;
     });
+    await ApiServer.post(
+      "/associate-companion-patient",
+      {
+        kinship: data.kinship,
+        PatientId: idPatient,
+        id: idCompanion
+      },
+      {
+        headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+      }
+    )
+      .then((res) => {
+        dispatch(setDataCompanionForm(dataform));
+        setOpenMessageAlert(true);
+        setMessageAlert(res.data.message);
+        setTypeAlert("success");
+      })
+      .catch((error) => {
+        setOpenMessageAlert(true);
+        setMessageAlert(error.response.data.message);
+        setTypeAlert("warning");
+        console.log(error.response);
+      });
   };
+
+  const registerCompanion = async (dataform) => {
+    if (dataImage.imageMultUrls[props.position].includes("blob")) {
+      const url = await UploadImageFile.createUrl(
+        dataImage.imageMultUrls[props.position],
+        dataform.cpf
+      );
+      dataform.avatarurl = url;
+    }
+    dataform.PatientId = idPatient;
+
+    await ApiServer.post("/register-companion", dataform, {
+      headers: {
+        "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
+      }
+    })
+      .then((res) => {
+        dispatch(setDataCompanionForm(dataform));
+        setMessageAlert(res.data.message);
+        setOpenMessageAlert(true);
+        setTypeAlert("success");
+      })
+      .catch((error) => {
+        if (error.response.data.message === "Acompanhante Já existe!") {
+          associateCompanionPatient(dataform);
+        } else {
+          console.log(error.response);
+        }
+      });
+  };
+
+  const handleSaveFile = (position, data) => {
+    if (dataImage.imageMultUrls[position - 1] === undefined && position !== 0) {
+      setMessageAlert("Favor Gravar Ficha " + position + " !");
+      setOpenMessageAlert(true);
+      setTypeAlert("warning");
+    } else {
+      dispatch(setDataCompanionForm(data));
+      setMessageAlert(`Ficha ${position + 1} foi gravada!`);
+      setOpenMessageAlert(true);
+      setTypeAlert("success");
+    }
+  };
+
   const searchCompanionByNameOrCPF = async (cpf) => {
     if (cpf.length === 14 && idPatient !== ":idPatient") {
       await ApiServer.post(
@@ -239,18 +200,20 @@ export function CompanionForm(props) {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
         }
       ).then((response) => {
-        if (response.data[0].id) {
+        if (response.data[0]?.id) {
           dispatch(
-            setImageMultUrls([
-              response.data[0].Avatar !== null
-                ? "/files/" + response.data[0].Avatar.url
+            setImageMultUrls(
+              response.data[0]?.Avatar?.url !== undefined ||
+                response?.Avatar?.url !== null
+                ? `${process.env.REACT_APP_BACKEND}/files/${response.data[0]?.Avatar?.url}`
                 : ""
-            ])
+            )
           );
 
           const datasCompanion = {
             ...response.data[0],
             state: response.data[0].Address.state,
+            status: response.data[0].Status.status,
             county: response.data[0].Address.county,
             district: response.data[0].Address.district,
             street: response.data[0].Address.street
@@ -260,45 +223,9 @@ export function CompanionForm(props) {
           setOpenMessageAlert(true);
           setMessageAlert("Acompanhante já Cadastrado!");
           setTypeAlert("warning");
-          setTimeout(() => {
-            associateCompanionPatient(response.data[0].id);
-          }, 4000);
         }
       });
     }
-  };
-
-  const DialogUI = () => {
-    return (
-      <div>
-        <Dialog open={opendialog}>
-          <DialogContent>
-            <DialogContentText>
-              <strong>Deseja desvincular o Acompanhante do Paciente?</strong>
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setOpenDialog(false);
-              }}
-              sx={{ marginRight: "30%" }}
-            >
-              Não
-            </Button>
-            <Button
-              onClick={() => {
-                removeCompanionAssocitedPatient(props.position);
-              }}
-              sx={{ marginRight: "20%" }}
-              autoFocus
-            >
-              Sim
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
   };
 
   return (
@@ -309,64 +236,18 @@ export function CompanionForm(props) {
         width: "90%"
       }}
     >
-      <DialogUI />
       <AlertMessage />
-
+      <DialogUI position={props.position} formRef={formRef} />
       <Grid container spacing={0.8}>
-        {props.position !== null && props.state === "new" ? (
-          <SRButton
-            sx={{
-              background: "#F29F05"
-            }}
-            onClick={() => {
-              formRef.current?.submitForm();
-              setVHeight(HeightPaper);
-            }}
-          >
-            <Button
-              sx={{ color: "#FFFF", marginTop: "4%" }}
-              startIcon={<SaveIcon />}
-            >
-              Gravar
-            </Button>
-          </SRButton>
-        ) : (
-          <SRButton
-            sx={{
-              background: "#03A63C"
-            }}
-          >
-            <Button
-              sx={{ color: "#FFFF", marginTop: "4%" }}
-              startIcon={<CheckCircleIcon />}
-            >
-              Salvo
-            </Button>
-          </SRButton>
-        )}
-        <SRButton
-          sx={{
-            marginLeft: "7%",
-            background: "#BF0404"
-          }}
-          onClick={() => {
-            props.state === "new"
-              ? handleRemoveFile(props.position)
-              : setOpenDialog(true);
-          }}
-        >
-          <Button
-            sx={{ color: "#FFFF", marginTop: "4%" }}
-            startIcon={<DeleteForeverIcon />}
-          >
-            Remover
-          </Button>
-        </SRButton>
-
+        <ButtonsSaveDelete
+          position={props.position}
+          formRef={formRef}
+          id={idPatient}
+        />
         <Paper
           sx={{
             minWidth: "100%",
-            height: vheight !== 0 ? "100%" : HeightPaper
+            height: openForm ? "100%" : HeightPaper
           }}
           elevation={5}
         >
@@ -396,11 +277,11 @@ export function CompanionForm(props) {
             </Grid>
             <Grid item xs={1}>
               <IconButton
-                onClick={() =>
-                  vheight !== 0 ? setVHeight(0) : setVHeight(HeightPaper)
-                }
+                onClick={() => {
+                  setOpenForm(openForm ? false : true);
+                }}
               >
-                {vheight !== 0 ? (
+                {openForm ? (
                   <KeyboardArrowDownIcon color="primary" />
                 ) : (
                   <KeyboardArrowUpIcon color="primary" />
@@ -412,7 +293,9 @@ export function CompanionForm(props) {
           <Form
             ref={formRef}
             onSubmit={(data) => {
-              handleSaveFile(props.position, data);
+              idPatient === ":idPatient"
+                ? handleSaveFile(props.position, data)
+                : registerCompanion(data);
             }}
           >
             <Grid
@@ -420,7 +303,7 @@ export function CompanionForm(props) {
               sx={{
                 marginTop: "2%",
                 padding: "2%",
-                display: vheight === 0 ? "none" : ""
+                display: openForm ? "" : "none"
               }}
               spacing={2}
             >
@@ -438,11 +321,7 @@ export function CompanionForm(props) {
               <Grid item xs={4} />
 
               <Grid item xs={4}>
-                <CameraFileMenu
-                  type="mult"
-                  position={props.position}
-                  id={idPatient}
-                />
+                <CameraFileMenu type="mult" position={props.position} />
               </Grid>
 
               <Grid item xs={4} />

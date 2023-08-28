@@ -67,10 +67,20 @@ export function CompanionPage() {
       formRef.current?.setData(newObj);
     }
   }, [idCompanion]);
+  useEffect(() => {
+    return () => resetForm();
+  }, []);
+  const resetForm = () => {
+    dispatch(setImageUrl(""));
+  };
 
   const handleSave = async (data) => {
-    if (dataImage.imageUrl !== undefined) {
-      UploadImageFile.createUrl(data, dataImage.imageUrl, datacompanion.cpf);
+    if (dataImage.imageUrl.includes("blob")) {
+      const url = await UploadImageFile.createUrl(
+        dataImage.imageUrl,
+        datacompanion.cpf
+      );
+      data.avatarurl = url;
     }
 
     data.AvatarId = datacompanion.AvatarId;
@@ -233,6 +243,7 @@ export function CompanionPage() {
                     option={ListReligiao}
                   />
                 </Grid>
+
                 <Grid item xs={2}>
                   <VAutoComplete
                     name="status"

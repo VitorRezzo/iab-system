@@ -2,7 +2,7 @@ import { Grid } from "@mui/material";
 import {
   PieCharts,
   LineCharts,
-  FluxPatiensCharts,
+  FluxResidentCharts,
   ColumnCharts,
   ExpenseCharts,
   CuredCharts,
@@ -25,7 +25,7 @@ export function DashboardPage() {
       <Grid item xs={12} sm={5}>
         <PieCharts />
       </Grid>
-      <Grid item xs={12} sm={7}>
+      <Grid item xs={12} sm={12}>
         <ColumnCharts />
       </Grid>
       <Grid item xs={12} sm={12}>
@@ -35,7 +35,7 @@ export function DashboardPage() {
         <LineCharts />
       </Grid>
       <Grid item xs={12} sm={12}>
-        <FluxPatiensCharts />
+        <FluxResidentCharts />
       </Grid>
     </Grid>
   );

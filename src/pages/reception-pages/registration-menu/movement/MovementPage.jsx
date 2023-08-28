@@ -40,7 +40,7 @@ import BackgroundPages from "../../../../assets/img/BackgroundPages.svg";
 import { Form } from "@unform/web";
 import { useParams } from "react-router-dom";
 import useDebounce from "../../../../shared/hooks/useDebounce";
-import moment from "moment";
+import { useNavigate } from "react-router-dom";
 const TextFieldUI = styled(VTextField)({
   "& label.Mui-focused": {
     color: "#0D0D0D"
@@ -71,24 +71,24 @@ export function MovementPage() {
   const [openModal, setOpenModal] = useState(false);
   const [checkCompanion, setCheckCompanion] = useState([]);
   const [companionList, setCompanionList] = useState([]);
-  const [moveData, setMoveData] = useState([""]);
-
+  const [moveData, setMoveData] = useState([]);
+  const navigate = useNavigate();
   const { idmove } = useParams();
   const formRefMove = useRef(null);
   useEffect(async () => {
     if (idmove !== ":idmove") {
-      await ApiServer.post("/get-movements-byid", idmove, {
+      await ApiServer.post(`/get-movements-byid/${idmove}`, null, {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }).then((response) => {
         formRefMove.current?.setData({
-          fullname: response.data[0].Patient.fullname,
-          procedure: response.data[0].procedure,
-          origin: response.data[0].origin,
-          destiny: response.data[0].destiny,
-          transport: response.data[0].transport,
-          price: response.data[0].price,
-          date: response.data[0].date,
-          hour: response.data[0].hour
+          fullname: response.data.Patient.fullname,
+          procedure: response.data.procedure,
+          origin: response.data.origin,
+          destiny: response.data.destiny,
+          transport: response.data.transport,
+          price: response.data.price,
+          date: response.data.date,
+          hour: response.data.hour
         });
       });
     }
@@ -104,7 +104,7 @@ export function MovementPage() {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
         }
       ).then((response) => {
-        setCompanionList((data) => [...data, response.data]);
+        setCompanionList([response.data]);
       });
     }
   };
@@ -128,24 +128,30 @@ export function MovementPage() {
   const handleSave = async (data) => {
     data.id = idmove;
     data.idPatient = moveData[0].id;
+    data.idStatus = moveData[0].idStatus;
     data.idCompanion = checkCompanion;
+
     if (idmove === ":idmove") {
       await ApiServer.post("/register-movements", data, {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-      }).then((response) => {
-        setMoveData((res) => [...res, response]);
+      }).then(() => {
         setOpenMessageAlert(true);
         setMessageAlert("Movimento Cadastrado!");
         setTypeAlert("success");
+        setTimeout(() => {
+          navigate(0);
+        }, 4000);
       });
     } else {
       await ApiServer.put("/update-movements", data, {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-      }).then((response) => {
-        setMoveData((res) => [...res, response]);
+      }).then(() => {
         setOpenMessageAlert(true);
         setMessageAlert("Movimento Atualizado!");
         setTypeAlert("success");
+        setTimeout(() => {
+          navigate(0);
+        }, 4000);
       });
     }
   };
@@ -166,9 +172,10 @@ export function MovementPage() {
         setMoveData(
           response.data.map((value) => ({
             id: value.id,
+            idStatus: value.StatusId,
             idCompanion: value.Companions,
             label: value.fullname,
-            Avatar: "/files/" + value.Avatar.url
+            Avatar: `${process.env.REACT_APP_BACKEND}/files/${value.Avatar.url}`
           }))
         );
       });
@@ -446,7 +453,7 @@ export function MovementPage() {
                   }}
                   src={
                     companionList[index].Avatar?.url !== undefined
-                      ? "/files/" + companionList[index].Avatar?.url
+                      ? `${process.env.REACT_APP_BACKEND}/files/${companionList[index].Avatar?.url}`
                       : ""
                   }
                 />

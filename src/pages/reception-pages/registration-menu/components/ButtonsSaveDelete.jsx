@@ -1,15 +1,15 @@
-import { SRButton } from "../../../../shared/styles/reception-styles/StylecadP";
+import { SRButton } from "../style/SRButtonUI";
 import { Button } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
-import { removeImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+import { removeImageMultUrls } from "../../../../shared/redux/slices/CameraFileSlice";
 import {
   removeDataCapanionForm,
   setDecrementAmoutForm,
   setOpenDialogForm
-} from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
+} from "../../../../shared/redux/slices/CompanionFormSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useAlertMessageContext } from "../../../../shared/context/AlertMessageContext";
 import { useMemo } from "react";

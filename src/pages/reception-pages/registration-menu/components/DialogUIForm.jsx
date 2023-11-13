@@ -9,12 +9,12 @@ import ApiServer from "../../../../services/ApiServer.js";
 import Cookies from "js-cookie";
 import { useAlertMessageContext } from "../../../../shared/context/AlertMessageContext.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { removeImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+import { removeImageMultUrls } from "../../../../shared/redux/slices/CameraFileSlice.jsx";
 import {
   removeDataCapanionForm,
   setDecrementAmoutForm,
   setOpenDialogForm
-} from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
+} from "../../../../shared/redux/slices/CompanionFormSlice.jsx";
 import { useParams } from "react-router-dom";
 
 export const DialogUI = ({ position, formRef }) => {

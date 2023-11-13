@@ -28,7 +28,7 @@ import { useAlertMessageContext } from "../../../../shared/context/AlertMessageC
 import { SideBarMenu } from "../../../../shared/components/reception-components/sidebar-menu/SideBarMenu";
 import { CameraFileMenu } from "../../../../shared/components/reception-components/camera-file-menu/CameraFileMenu";
 import { useDispatch, useSelector } from "react-redux";
-import { setImageUrl } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+import { setImageUrl } from "../../../../shared/redux/slices/CameraFileSlice";
 import UploadImageFile from "../../../../shared/feature/UploadImageFile";
 export function CompanionPage() {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
@@ -48,23 +48,24 @@ export function CompanionPage() {
           headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
         }
       ).then((response) => {
-        return response;
+        return response.data.Resident;
       });
+
       dispatch(
         setImageUrl(
-          response.data.Avatar !== null
-            ? `${process.env.REACT_APP_BACKEND}/files/${response.data.Avatar.url}`
+          response?.Avatare?.url !== null
+            ? `${process.env.REACT_APP_BACKEND}/files/${response?.Avatare?.url}`
             : ""
         )
       );
 
-      const newObj = {
-        ...response.data,
-        ...response.data.Status,
-        ...response.data.Address
+      const data = {
+        ...response,
+        ...{ status: response.Status.status },
+        ...response.Address
       };
-      setDataCompanion(newObj);
-      formRef.current?.setData(newObj);
+      setDataCompanion(data);
+      formRef.current?.setData(data);
     }
   }, [idCompanion]);
   useEffect(() => {
@@ -283,7 +284,11 @@ export function CompanionPage() {
           </Paper>
         </Grid>
         <Grid item xs={1.5}>
-          <SideBarMenu typePage=":idCompanion" formRef={formRef} />
+          <SideBarMenu
+            typePage="acompanhante"
+            idPage=":idCompanion"
+            formRef={formRef}
+          />
         </Grid>
       </Grid>
     </Box>

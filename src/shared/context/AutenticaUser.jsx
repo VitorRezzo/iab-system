@@ -15,44 +15,39 @@ export function AutenticaUserProvider({ children }) {
     useAlertMessageContext();
   const [userLog, setUserLog] = useState();
 
-  const VerificaAutentica = async () => {
-    if (!Cookies.get(process.env.REACT_APP_TOKEN)) {
-      navigate("/");
-    } else {
-      await ApiServer.post(
-        "/verify-AuthUser",
-        {
-          username: localStorage.getItem("--username")
-        },
-        {
-          headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-        }
-      ).then((response) => {
-        if (response.data.auth === false) {
-          setOpenMessageAlert(true);
-          setMessageAlert(response.data.message);
-          setTypeAlert("warning");
-          setTimeout(() => {
-            Cookies.remove(process.env.REACT_APP_TOKEN, { path: "" });
-            localStorage.setItem("--auth", response.data.auth);
-            navigate("/");
-            setOpenMessageAlert(false);
-          }, 3750);
-        }
-        localStorage.setItem("--auth", response.data.auth);
-        setUserLog(localStorage.getItem("--username"));
-      });
-    }
+  const checkUserLog = async () => {
+    await ApiServer.post(
+      "/check-AuthUser",
+      {
+        id: localStorage.getItem("--userid")
+      },
+      {
+        headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+      }
+    ).then((response) => {
+      if (response?.data?.auth === false) {
+        setOpenMessageAlert(true);
+        setMessageAlert(response.data.message);
+        setTypeAlert("warning");
+        setTimeout(() => {
+          Cookies.remove(process.env.REACT_APP_TOKEN, { path: "" });
+          navigate("/");
+          setOpenMessageAlert(false);
+        }, 3750);
+      }
+      response.data?.username
+        ? setUserLog(response.data?.username)
+        : navigate("/");
+    });
   };
 
   useEffect(() => {
-    VerificaAutentica();
+    checkUserLog();
   }, []);
 
   const value = {
     setUserLog,
-    userLog,
-    VerificaAutentica
+    userLog
   };
 
   return (

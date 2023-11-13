@@ -4,7 +4,7 @@ import { WebCamPhoto } from "./WebCamPhoto";
 import { IconButton, Avatar, Tooltip, Modal, Box } from "@mui/material";
 import { FcIntegratedWebcam, FcFolder } from "react-icons/fc";
 import { useSelector, useDispatch } from "react-redux";
-import { setStateModal } from "../../../redux/slices/camera-file-slice/CameraFileSlice";
+import { setStateModal } from "../../../redux/slices/CameraFileSlice";
 
 export function CameraFileMenu(props) {
   const data = useSelector((state) => state.cameraFileMenu);
@@ -17,14 +17,14 @@ export function CameraFileMenu(props) {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 450,
-    borderRadius: "100%"
+    borderRadius: 5
   };
   return (
     <React.Fragment>
       <Box
         sx={{
-          width: "250px",
-          height: "250px"
+          width: "260px",
+          height: "260px"
         }}
         onMouseEnter={() => setIsVisible("visible")}
         onMouseLeave={() => setIsVisible("hidden")}
@@ -36,38 +36,38 @@ export function CameraFileMenu(props) {
               : data.imageUrl
           }
           sx={{
-            width: "250px",
-            height: "250px"
+            "& .MuiAvatar-img": {
+              padding: "25%"
+            },
+            width: "100%",
+            height: "100%"
           }}
         />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+            marginTop: "-30%",
 
-        <Tooltip title="Tirar Foto">
-          <IconButton
-            sx={{
-              marginTop: "-40%",
-              marginLeft: "18%",
-              visibility: isVisible
-            }}
-            onClick={() => {
-              dispatch(setStateModal(true));
-            }}
-          >
-            <FcIntegratedWebcam size={40} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Localizar Imagem">
-          <IconButton
-            sx={{
-              marginTop: "-40%",
-              marginLeft: "16%",
-              visibility: isVisible
-            }}
-            component="label"
-          >
-            <FcFolder size={40} component="label" />
-            <ImageFile type={props.type} position={props.position} />
-          </IconButton>
-        </Tooltip>
+            visibility: isVisible
+          }}
+        >
+          <Tooltip title="Tirar Foto">
+            <IconButton
+              onClick={() => {
+                dispatch(setStateModal(true));
+              }}
+            >
+              <FcIntegratedWebcam size={40} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Localizar Imagem">
+            <IconButton component="label">
+              <FcFolder size={40} component="label" />
+              <ImageFile type={props.type} position={props.position} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
       <Modal
         open={data.stateModal}

@@ -1,7 +1,7 @@
 import { TablePatient } from "./TablePatient";
 import { Paper, Typography } from "@mui/material";
 import PaperTexture from "../../../../assets/img/PaperTexture.svg";
-import { BoxMark } from "../../../../shared/styles/reception-styles/StylecadP";
+import { BoxMarkUI } from "../style/BoxMarkUI";
 import { useState } from "react";
 import { TableCampanion } from "./TableCampanion";
 import { store } from "../../../../shared/redux/store/store";
@@ -29,14 +29,16 @@ export function TableModel(props) {
 
   return (
     <>
-      <BoxMark
+      <BoxMarkUI
         background={props.color}
         onClick={() => {
           vheight === null ? setVHeight("100%") : setVHeight(null);
         }}
       >
-        <Typography variant="h4">{props.name}</Typography>
-      </BoxMark>
+        <Typography variant="h4" color="#FFF">
+          {props.name}
+        </Typography>
+      </BoxMarkUI>
       <Paper
         sx={{
           marginTop: "-1%",

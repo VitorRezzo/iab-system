@@ -1,12 +1,13 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { cameraFileMenuReducer } from "../slices/camera-file-slice/CameraFileSlice";
-import { companionFormReducer } from "../slices/camera-file-slice/CompanionFormSlice";
-import { reportsMenuSliceReducer } from "../slices/camera-file-slice/ReportsMenuSlice";
-
+import { cameraFileMenuReducer } from "../slices/CameraFileSlice";
+import { companionFormReducer } from "../slices/CompanionFormSlice";
+import { reportsMenuSliceReducer } from "../slices/ReportsMenuSlice";
+import { movementPageSliceReducer } from "../slices/MovementPageSlice";
 const rootReducer = combineReducers({
   cameraFileMenu: cameraFileMenuReducer,
   companionForm: companionFormReducer,
-  reportsMenu: reportsMenuSliceReducer
+  reportsMenu: reportsMenuSliceReducer,
+  movementPage: movementPageSliceReducer
 });
 
 export const store = configureStore({

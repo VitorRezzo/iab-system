@@ -4,10 +4,10 @@ import { Box } from "@mui/system";
 import React, { useRef, useCallback } from "react";
 import Webcam from "react-webcam";
 import { useDispatch, useSelector } from "react-redux";
-import { setImageUrl } from "../../../redux/slices/camera-file-slice/CameraFileSlice";
-import { setStateModal } from "../../../redux/slices/camera-file-slice/CameraFileSlice";
-import { setImageMultUrls } from "../../../redux/slices/camera-file-slice/CameraFileSlice";
-import { removeImageMultUrls } from "../../../redux/slices/camera-file-slice/CameraFileSlice";
+import { setImageUrl } from "../../../redux/slices/CameraFileSlice";
+import { setStateModal } from "../../../redux/slices/CameraFileSlice";
+import { setImageMultUrls } from "../../../redux/slices/CameraFileSlice";
+import { removeImageMultUrls } from "../../../redux/slices/CameraFileSlice";
 export const WebCamPhoto = (props) => {
   const dispatch = useDispatch();
   const dataImage = useSelector((state) => state.cameraFileMenu);

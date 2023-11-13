@@ -9,6 +9,12 @@ import ApiServer from "../../../../services/ApiServer";
 import Cookies from "js-cookie";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
+import MoodBadIcon from "@mui/icons-material/MoodBad";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+
 import moment from "moment";
 
 export const PieCharts = () => {
@@ -69,7 +75,7 @@ export const PieCharts = () => {
               },
               total: {
                 show: true,
-                label: "Total",
+                label: "Na Casa",
                 fontSize: isSmallScreen ? "10px" : "20px",
                 color: "#373d3f",
                 formatter: function (w) {
@@ -90,12 +96,12 @@ export const PieCharts = () => {
         style={{
           width: "100%",
           minWidth: "200px",
-          maxWidth: "450px",
-          height: "100vh",
-          maxHeight: isSmallScreen ? "200px" : "295px"
+
+          maxHeight: isSmallScreen ? "200px" : "300px"
         }}
         options={state.options}
         series={state.series}
+        height={340}
         type="donut"
       />
     </BoxChart>
@@ -106,7 +112,7 @@ export const ColumnCharts = () => {
   const [column, setColumn] = useState();
 
   useEffect(async () => {
-    await ApiServer.get("/count-allpathologys-patients", {
+    await ApiServer.get("/count-allpatients-pathologys", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
       setColumn(response.data);
@@ -126,7 +132,7 @@ export const ColumnCharts = () => {
     ],
     chart: {
       type: "bar",
-      height: 430,
+      width: 10,
       toolbar: {
         show: false
       }
@@ -134,33 +140,15 @@ export const ColumnCharts = () => {
 
     plotOptions: {
       bar: {
-        barHeight: "85%",
-        horizontal: true,
+        barHeight: "25%",
+        horizontal: false,
         distributed: true,
-        dataLabels: {
-          position: "bottom"
-        }
-      }
-    },
-    dataLabels: {
-      enabled: true,
-      textAnchor: "start",
-      style: {
-        colors: ["#fff"],
-
-        fontWeight: "200"
-      },
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: true
+        columnWidth: "15%"
       }
     },
 
     legend: {
-      show: false
+      show: true
     },
     yaxis: {
       labels: {
@@ -168,6 +156,9 @@ export const ColumnCharts = () => {
       }
     },
     xaxis: {
+      labels: {
+        show: false
+      },
       categories: column?.pathology !== undefined ? column.pathology : [""]
     },
     tooltip: {
@@ -196,16 +187,17 @@ export const ColumnCharts = () => {
         options={state}
         series={state.series}
         type="bar"
-        height={400}
+        height={350}
       />
     </BoxChart>
   );
 };
+
 export const TreemapCharts = () => {
   const [map, setMap] = useState();
 
   useEffect(async () => {
-    await ApiServer.get("/list-residents-address", {
+    await ApiServer.get("/count-residentsby-address", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
       setMap(response.data);
@@ -219,7 +211,6 @@ export const TreemapCharts = () => {
 
   const state = {
     chart: {
-      height: 350,
       toolbar: {
         show: false
       },
@@ -241,12 +232,9 @@ export const TreemapCharts = () => {
   return (
     <BoxChart>
       <Typography
-        variant="h3"
+        variant="h4"
         sx={{
-          display: "flex",
-          alignItems: "center",
           fontWeight: 700,
-
           padding: "1%"
         }}
       >
@@ -254,35 +242,34 @@ export const TreemapCharts = () => {
       </Typography>
       <Chart
         style={{
-          width: "100%",
           minWidth: "250px",
-          maxHeight: "350px",
-          paddingLeft: "2.2%"
+          maxHeight: "300px",
+          padding: "2% 5%"
         }}
         options={state}
         series={state.series}
         type="treemap"
-        width={"96%"}
-        height={350}
+        height={300}
       />
     </BoxChart>
   );
 };
+
 export const LineCharts = () => {
-  const [lineMoviments, setLineMoviments] = useState();
+  const [lineExpenses, setLineExpenses] = useState();
   const date = new Date();
   let startdate = moment(date).format("YYYY-MM-") + "01";
   let enddate = moment(date).format("YYYY-MM-") + "31";
 
   useEffect(async () => {
     await ApiServer.post(
-      "/list-pricesmovements-residents",
+      "/count-allresidents-Expenses",
       { startdate: startdate, enddate: enddate },
       {
         headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
       }
     ).then((response) => {
-      setLineMoviments(response.data);
+      setLineExpenses(response.data);
     });
   }, []);
 
@@ -290,13 +277,12 @@ export const LineCharts = () => {
     series: [
       {
         name: "Valor",
-        data: lineMoviments !== undefined ? lineMoviments : [{ x: 0, y: 0 }]
+        data: lineExpenses !== undefined ? lineExpenses : [{ x: 0, y: 0 }]
       }
     ],
 
     chart: {
       type: "area",
-      height: 200,
       locales: [ptbr],
       stacked: false,
       defaultLocale: "pt-br",
@@ -311,11 +297,6 @@ export const LineCharts = () => {
 
     markers: {
       size: [4, 7]
-    },
-
-    title: {
-      text: "Valores Movimentados ",
-      align: "left"
     },
 
     yaxis: {
@@ -343,30 +324,98 @@ export const LineCharts = () => {
 
   return (
     <BoxChart>
+      <Typography
+        variant="h4"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          fontWeight: 700,
+          padding: "1%"
+        }}
+      >
+        Desepesas dos Moradores
+      </Typography>
       <Chart
         style={{ width: "100%", minWidth: "250px" }}
         options={state}
         series={state.series}
-        height={350}
+        height={300}
         type="area"
       />
     </BoxChart>
   );
 };
 
-export const ExpenseCharts = () => {
+export const TotalResidentsCharts = () => {
+  const [allResidents, setAllResidents] = useState();
+  useEffect(async () => {
+    await ApiServer.get("/count-allresidents", {
+      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+    }).then((response) => {
+      setAllResidents(response.data);
+    });
+  }, []);
+  const formatter = new Intl.NumberFormat("pt-BR");
+
   return (
-    <BoxChart>
-      <BoxChartMin
-        title={"R$ 500,00"}
-        subtitle={"Desepesas Mês"}
-        color={"#d43a00"}
-        gradient={
-          "linear-gradient(90deg, rgba(212,58,0,1) 80%, rgba(240,105,55,1) 100%)"
-        }
-        icon={<ArrowDownwardIcon sx={{ color: "#d43a00" }} />}
-      />
-    </BoxChart>
+    <BoxChartMin
+      title={formatter.format(allResidents)}
+      subtitle={"Total Acolhidos"}
+      variant={"h1"}
+      color={"#2e15ed"}
+      gradient={"linear-gradient(90deg, #2e15ed 80%, #2e15ed 100%)"}
+      icon={
+        <VolunteerActivismIcon
+          sx={{
+            marginLeft: "70%",
+            width: "50px",
+            transform: "scaleX(-1)",
+            height: "50px",
+            opacity: "60%",
+            color: "#2e15ed"
+          }}
+        />
+      }
+    />
+  );
+};
+
+export const InpatientCharts = () => {
+  const formatter = new Intl.NumberFormat("pt-BR");
+  return (
+    <BoxChartMin
+      title={formatter.format("0")}
+      subtitle={"Internado"}
+      color={"#ba2d2d"}
+      gradient={"linear-gradient(90deg, #ba2d2d 80%, #ba2d2d 100%)"}
+      icon={<LocalHospitalIcon fontSize="small" sx={{ color: "#ba2d2d" }} />}
+    />
+  );
+};
+
+export const ExpenseCharts = () => {
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+  return (
+    <BoxChartMin
+      title={formatter.format("53")}
+      subtitle={"Desepesas Mês"}
+      color={"#e87624"}
+      variant="h2"
+      gradient={"linear-gradient(90deg, #e87624 80%, #e87624 100%)"}
+      icon={
+        <TrendingDownIcon
+          sx={{
+            width: "35px",
+            height: "35px",
+            color: "#e87624",
+            marginLeft: "70%"
+          }}
+        />
+      }
+    />
   );
 };
 
@@ -374,7 +423,7 @@ export const CuredCharts = () => {
   const [patientscured, setPatientsCured] = useState();
 
   useEffect(async () => {
-    await ApiServer.get("/count-patientscured-byyear", {
+    await ApiServer.get("/count-patientscured", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
       setPatientsCured(response.data);
@@ -387,17 +436,69 @@ export const CuredCharts = () => {
   }, []);
 
   return (
-    <BoxChart>
-      <BoxChartMin
-        title={patientscured?.count ? patientscured.count : 0}
-        subtitle={"Curados Ano"}
-        color={"#40957f"}
-        gradient={
-          "linear-gradient(90deg, rgba(64,149,127,0.9697128851540616) 70%, rgba(86,204,173,1) 100%)"
-        }
-        icon={<ArrowUpwardIcon sx={{ color: "#40957f" }} />}
-      />
-    </BoxChart>
+    <BoxChartMin
+      title={patientscured?.count ? patientscured.count : 0}
+      subtitle={"Curados"}
+      color={"#40957f"}
+      gradient={
+        "linear-gradient(90deg, rgba(64,149,127,0.9697128851540616) 70%, rgba(86,204,173,1) 100%)"
+      }
+      icon={<InsertEmoticonIcon fontSize="small" sx={{ color: "#40957f" }} />}
+    />
+  );
+};
+
+export const EnterTodayCharts = () => {
+  const [residentsEnter, setResidentsEnter] = useState();
+
+  useEffect(async () => {
+    await ApiServer.get("/count-residentsenter", {
+      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+    }).then((response) => {
+      setResidentsEnter(response.data);
+    });
+    /*
+    socket.emit("connection");
+    socket.on("ObserserAllPatient", (data) => console.log(data));
+    return socket.off("ObserserAllPatient");
+    */
+  }, []);
+
+  return (
+    <BoxChartMin
+      title={residentsEnter?.count ? residentsEnter.count : 0}
+      subtitle={"Entrada Hoje"}
+      color={"#1693a5"}
+      gradient={"linear-gradient(90deg, #1693a5 70%, #1693a5 100%)"}
+      icon={<ArrowUpwardIcon fontSize="small" sx={{ color: "#1693a5" }} />}
+    />
+  );
+};
+
+export const ExitTodayCharts = () => {
+  const [residentsExit, setResidentsExit] = useState();
+
+  useEffect(async () => {
+    await ApiServer.get("/count-residentsexit", {
+      headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
+    }).then((response) => {
+      setResidentsExit(response.data);
+    });
+    /*
+    socket.emit("connection");
+    socket.on("ObserserAllPatient", (data) => console.log(data));
+    return socket.off("ObserserAllPatient");
+    */
+  }, []);
+
+  return (
+    <BoxChartMin
+      title={residentsExit?.count ? residentsExit.count : 0}
+      subtitle={"Saida Hoje"}
+      color={"#a3aa14"}
+      gradient={"linear-gradient(90deg, #a3aa14 70%, #c7c730 100%)"}
+      icon={<ArrowDownwardIcon fontSize="small" sx={{ color: "#a3aa14" }} />}
+    />
   );
 };
 
@@ -405,7 +506,7 @@ export const DeadCharts = () => {
   const [patientsdead, setPatientsDead] = useState();
 
   useEffect(async () => {
-    await ApiServer.get("/count-patientsdead-byyear", {
+    await ApiServer.get("/count-patientsdead", {
       headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
     }).then((response) => {
       setPatientsDead(response.data);
@@ -418,17 +519,15 @@ export const DeadCharts = () => {
   }, []);
 
   return (
-    <BoxChart>
-      <BoxChartMin
-        title={patientsdead?.count ? patientsdead.count : 0}
-        subtitle={"Obitos Ano"}
-        color={"#405059"}
-        gradient={
-          "linear-gradient(90deg, rgba(64,80,89,1) 80%, rgba(96,123,138,1) 100%)"
-        }
-        icon={<ArrowDownwardIcon sx={{ color: "#405059" }} />}
-      ></BoxChartMin>
-    </BoxChart>
+    <BoxChartMin
+      title={patientsdead?.count ? patientsdead.count : 0}
+      subtitle={"Óbitos"}
+      color={"#405059"}
+      gradient={
+        "linear-gradient(90deg, rgba(64,80,89,1) 80%, rgba(96,123,138,1) 100%)"
+      }
+      icon={<MoodBadIcon fontSize="small" sx={{ color: "#405059" }} />}
+    ></BoxChartMin>
   );
 };
 

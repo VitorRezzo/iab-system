@@ -25,7 +25,7 @@ import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { setCompanionTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
+import { setCompanionTable } from "../../../../shared/redux/slices/ReportsMenuSlice.jsx";
 import useDebounce from "../../../../shared/hooks/useDebounce.jsx";
 import { useDispatch, useSelector } from "react-redux";
 export function TableCampanion() {
@@ -161,6 +161,7 @@ function Linhas(companion) {
         aria-label="expand row"
         sx={{
           marginTop: "2%",
+          cursor: "pointer",
           backgroundColor: "#e6e8e3"
         }}
         onClick={() => {
@@ -170,18 +171,27 @@ function Linhas(companion) {
         <TableCell>
           <Avatar
             src={
-              companion.data.Avatar?.url !== null
-                ? `${process.env.REACT_APP_BACKEND}/files/${companion.data.Avatar?.url}`
+              companion.data.Avatare?.url !== null
+                ? `${process.env.REACT_APP_BACKEND}/files/${companion.data.Resident.Avatare?.url}`
                 : ""
             }
-            sx={{ width: "60px", height: "60px" }}
+            sx={{
+              "& .MuiAvatar-img": {
+                padding: "15%",
+                backgroundColor: "white"
+              },
+              width: "80px",
+              height: "80px"
+            }}
             alt="Avatar Acompanhantes"
           />
         </TableCell>
         <TableCell sx={{ color: "#171430" }} scope="companion.data">
-          {companion.data.fullname}
+          {companion.data.Resident.fullname}
         </TableCell>
-        <TableCell sx={{ color: "#171430" }}>{companion.data.cpf}</TableCell>
+        <TableCell sx={{ color: "#171430" }}>
+          {companion.data.Resident.cpf}
+        </TableCell>
 
         <TableCell>
           <Box
@@ -190,26 +200,28 @@ function Linhas(companion) {
               paddingTop: "10%",
               color: "#353634",
               backgroundColor:
-                companion.data.Status.status == "Internado" ||
-                companion.data.Status.status == "Óbito"
+                companion.data.Resident.Status.status == "Internado" ||
+                companion.data.Resident.Status.status == "Óbito"
                   ? "#fa3e3e"
-                  : companion.data.Status.status == "Viagem"
+                  : companion.data.Resident.Status.status == "Viagem"
                   ? "#f3c75f"
-                  : companion.data.Status.status == "Curado"
+                  : companion.data.Resident.Status.status == "Curado"
                   ? "#80b3ff"
                   : "#a2fa1b",
               height: "30px",
               borderRadius: "5px"
             }}
           >
-            {companion.data.Status.status}
+            {companion.data.Resident.Status.status}
           </Box>
         </TableCell>
         <TableCell>
           <Tooltip title="Editar">
             <IconButton
               onClick={() => {
-                navigate(`/cadastro/Acompanhante/${companion.data.id}`);
+                navigate(
+                  `/cadastro/acompanhante/${companion.data.Resident.id}`
+                );
               }}
             >
               <NoteAltIcon />
@@ -221,21 +233,25 @@ function Linhas(companion) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h5" gutterBottom component="div">
+              <Typography variant="h2" gutterBottom component="div">
                 Endereço
               </Typography>
               <Box>
-                <Typography>Estado: {companion.data.Address.state}</Typography>
-
-                <Typography>
-                  Municipio: {companion.data.Address.county}
+                <Typography variant="h4">
+                  Estado: {companion.data.Resident.Address.state}
                 </Typography>
 
-                <Typography>
-                  Bairro: {companion.data.Address.district}
+                <Typography variant="h4">
+                  Municipio: {companion.data.Resident.Address.county}
                 </Typography>
 
-                <Typography>Rua: {companion.data.Address.street}</Typography>
+                <Typography variant="h4">
+                  Bairro: {companion.data.Resident.Address.district}
+                </Typography>
+
+                <Typography variant="h4">
+                  Rua: {companion.data.Resident.Address.street}
+                </Typography>
               </Box>
             </Box>
             <Divider />

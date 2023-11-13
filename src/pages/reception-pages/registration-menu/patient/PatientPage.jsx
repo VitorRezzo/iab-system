@@ -28,7 +28,6 @@ import ListFormasUniao from "../../../../constants/ListFormasUniao.json";
 import ListStatusCivil from "../../../../constants/ListStatusCivil.json";
 
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import { FcRules } from "react-icons/fc";
 
 import { useAlertMessageContext } from "../../../../shared/context/AlertMessageContext";
 import { VTextField } from "../../../../shared/components/form-unform/VTextField.tsx";
@@ -41,26 +40,26 @@ import BackgroundPages from "../../../../assets/img/BackgroundPages.svg";
 
 import { Form } from "@unform/web";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  MenuAddCompanion,
-  TitleMenuAcom,
-  SubMenuCompanion
-} from "../../../../shared/styles/reception-styles/StylecadP.jsx";
+import { MenuCPUI, SubMenuCPUI } from "../style/BoxAddCompanionUI";
 
 import { CompanionForm } from "../components/CompanionForm";
 import { SideBarMenu } from "../../../../shared/components/reception-components/sidebar-menu/SideBarMenu";
 import { CameraFileMenu } from "../../../../shared/components/reception-components/camera-file-menu/CameraFileMenu";
-import { useDispatch, useSelector } from "react-redux";
+import UploadImageFile from "../../../../shared/feature/UploadImageFile";
+
 import {
   resetImageMultUrls,
   setImageUrl
-} from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+} from "../../../../shared/redux/slices/CameraFileSlice";
+
 import {
   setAmoutForm,
   setIncremetAmoutForm,
   resetCompanionForm
-} from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice";
-import UploadImageFile from "../../../../shared/feature/UploadImageFile";
+} from "../../../../shared/redux/slices/CompanionFormSlice";
+
+import { useDispatch, useSelector } from "react-redux";
+
 export function PatientPage() {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
     useAlertMessageContext();
@@ -86,23 +85,22 @@ export function PatientPage() {
 
       dispatch(
         setImageUrl(
-          response.data.Avatar !== null
-            ? `${process.env.REACT_APP_BACKEND}/files/${response.data.Avatar.url}`
+          response.data?.Resident?.Avatare !== null
+            ? `${process.env.REACT_APP_BACKEND}/files/${response.data.Resident.Avatare.url}`
             : ""
         )
       );
 
       const datasPatient = {
-        ...response.data,
-        ...response.data.Address,
+        ...response.data.Resident,
+        ...response.data.Resident.Address,
         ...response.data.MedicalRecord,
-        ...response.data.Status
+        ...response.data.Resident.Status
       };
 
       formRef.current?.setData(datasPatient);
       setPatientData(response.data);
-
-      dispatch(setIncremetAmoutForm(response.data.Companions.length));
+      dispatch(setIncremetAmoutForm(response.data.PatientsCompanions.length));
     }
   }, [idPatient]);
 
@@ -134,7 +132,7 @@ export function PatientPage() {
         }
       })
         .then(async (res) => {
-          dataForm.dataCompanionForm !== undefined
+          dataForm.dataCompanionForm.length > 0
             ? registerCompanion(data.cpf)
             : null;
           setMessageAlert(res.data.message);
@@ -142,7 +140,7 @@ export function PatientPage() {
           setTypeAlert("success");
         })
         .catch((erro) => {
-          console.log(erro);
+          console.log(erro.config);
         });
     } else {
       if (dataImage.imageUrl.includes("blob")) {
@@ -154,11 +152,11 @@ export function PatientPage() {
         data.avatarurl = url;
       }
 
-      data.id = patientData.id;
-      data.AddressId = patientData.AddressId;
+      data.id = idPatient;
+      data.AddressId = patientData.Resident.AddressId;
       data.MedicalRecordId = patientData.MedicalRecordId;
-      data.AvatarId = patientData.AvatarId;
-      data.StatusId = patientData.StatusId;
+      data.AvatarId = patientData.Resident.AvatareId;
+      data.StatusId = patientData.Resident.StatusId;
       await ApiServer.put("/update-patients", data, {
         headers: {
           "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN)
@@ -191,6 +189,7 @@ export function PatientPage() {
         }
       }
     ).then((res) => {
+      console.log(res.data[0].id);
       return res.data[0].id;
     });
 
@@ -255,6 +254,9 @@ export function PatientPage() {
     }
   };
 
+  const handlePositionFormCompanion = () => {
+    dispatch(setIncremetAmoutForm(1));
+  };
   return (
     <Box sx={{ padding: "2%", marginTop: "3%" }}>
       <AlertMessage />
@@ -530,43 +532,36 @@ export function PatientPage() {
               </Form>
             </Paper>
           </Paper>
-          <MenuAddCompanion>
-            <TitleMenuAcom>
-              <FcRules size={25} />
-              <Typography variant="h5" noWrap component="span">
-                FICHAS DOS ACOMPANHANTES
-              </Typography>
-            </TitleMenuAcom>
-            <SubMenuCompanion>
-              <Tooltip title="Adcionar Ficha">
+          <MenuCPUI>
+            <SubMenuCPUI>
+              <Tooltip title="Adicionar Ficha">
                 <IconButton
                   onClick={() => {
-                    dispatch(setIncremetAmoutForm(1));
+                    handlePositionFormCompanion();
                   }}
-                  sx={{ marginTop: "10%" }}
                   size="large"
                   color="success"
                 >
                   <AddBoxIcon />
                 </IconButton>
               </Tooltip>
-              <Box
-                sx={{
-                  dysplay: "flex",
-                  flexDirection: "row",
-                  marginTop: "20%"
-                }}
-              >
-                <Typography variant="h5" noWrap component="span">
-                  Ficha(s): {dataForm.amoutForm}
-                </Typography>
-              </Box>
-            </SubMenuCompanion>
-          </MenuAddCompanion>
+              <Typography variant="h5" color="#FFF" noWrap component="span">
+                ADICIONAR ACOMPANHANTES
+              </Typography>
+            </SubMenuCPUI>
+
+            <Typography variant="h5" color="#FFF" noWrap component="span">
+              Ficha(s): {dataForm.amoutForm}
+            </Typography>
+          </MenuCPUI>
         </Grid>
 
         <Grid item xs={1.5}>
-          <SideBarMenu typePage=":idPatient" formRef={formRef} />
+          <SideBarMenu
+            typePage="paciente"
+            idPage=":idPatient"
+            formRef={formRef}
+          />
         </Grid>
       </Grid>
 
@@ -574,7 +569,15 @@ export function PatientPage() {
         <CompanionForm
           key={index}
           position={index}
-          state={patientData?.Companions[index] !== undefined ? "save" : "new"}
+          datasCompanion={
+            patientData?.PatientsCompanions[index]?.Companion.Resident
+          }
+          kinship={patientData?.PatientsCompanions[index]?.kinship}
+          state={
+            patientData?.PatientsCompanions[index]?.id !== undefined
+              ? "save"
+              : "new"
+          }
         />
       ))}
     </Box>

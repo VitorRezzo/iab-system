@@ -42,15 +42,12 @@ export function LoginPage({ children }) {
       password: data.pass
     })
       .then((response) => {
-        if (response.data.auth) {
-          Cookies.set(process.env.REACT_APP_TOKEN, response.data.token);
-          localStorage.setItem("--auth", response.data.auth);
-          localStorage.setItem("--username", response.data.username);
-          setIsOpenModal(true);
-        }
+        Cookies.set(process.env.REACT_APP_TOKEN, response.data.token);
+        localStorage.setItem("--username", response.data.username);
+        localStorage.setItem("--userid", response.data.userid);
+        setIsOpenModal(true);
       })
       .catch((error) => {
-        localStorage.setItem("--auth", false);
         alert(error.response.data.message);
       });
   };

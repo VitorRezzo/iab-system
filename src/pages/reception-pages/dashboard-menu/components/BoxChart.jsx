@@ -17,29 +17,66 @@ export function BoxChart({ children }) {
   );
 }
 
-export function BoxChartMin({ title, subtitle, icon, color, gradient }) {
+export function BoxChartMin({
+  title,
+  subtitle,
+  icon,
+  color,
+  gradient,
+  variant
+}) {
   return (
-    <Grid container sx={{ maxHeight: "200px" }}>
-      <Grid item xs={12}>
-        <Typography variant="h1" sx={{ color: color }}>
-          {title}
-        </Typography>
-        <Typography variant="h2" sx={{ display: "flex", alignItems: "center" }}>
-          {subtitle} {icon}
-        </Typography>
+    <Paper
+      sx={{
+        backgroundImage: `url(${BackgroundPages})`,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        transition: "all 0.3s",
+        "&:hover": {
+          transform: "scale(1.1)"
+        }
+      }}
+      elevation={3}
+    >
+      <Grid container spacing={0.5}>
+        <Grid item xs={12} />
+        <Grid item xs={2} />
+        <Grid item xs={7}>
+          <Typography
+            variant={variant ? variant : "h3"}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              borderRadius: "5px",
+              fontWeight: "700"
+            }}
+          >
+            {title}
+          </Typography>
+        </Grid>
+        <Grid item xs={1}>
+          {icon}
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Box
-          sx={{
-            backgroundColor: color,
-            width: "100%",
-            height: "30px",
-            marginTop: "2%",
-            borderRadius: "3px",
-            background: gradient
-          }}
-        ></Box>
-      </Grid>
-    </Grid>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: color,
+          width: "100%",
+          height: "25px",
+          marginTop: "3%",
+          transition: "all 0.3s",
+
+          borderRadius: "3px",
+          background: gradient
+        }}
+      >
+        <Typography variant="h5" color="#e1e6e3" sx={{}}>
+          {subtitle}
+        </Typography>
+      </Box>
+    </Paper>
   );
 }

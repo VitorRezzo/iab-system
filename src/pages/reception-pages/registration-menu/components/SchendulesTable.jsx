@@ -28,7 +28,7 @@ import Cookies from "js-cookie";
 import ApiServer from "../../../../services/ApiServer.js";
 import moment from "moment";
 
-export function MoveTable() {
+export function SchendulesTable(props) {
   const [data, setData] = useState([]);
   const today = new Date();
 
@@ -44,7 +44,7 @@ export function MoveTable() {
     ).then((response) => {
       setData(response.data.map((value) => value));
     });
-  }, []);
+  }, [props.data]);
 
   const handleSearch = async (data) => {
     await ApiServer.post(
@@ -62,7 +62,7 @@ export function MoveTable() {
   };
 
   return (
-    <Box>
+    <Box sx={{ padding: "2%" }}>
       <Box>
         <Form onSubmit={(data) => handleSearch(data)}>
           <Grid container spacing={1}>
@@ -115,9 +115,7 @@ export function MoveTable() {
 
               <TableCell> Destino</TableCell>
 
-              <TableCell> Locomoção</TableCell>
-
-              <TableCell> Valor</TableCell>
+              <TableCell> Meio de Locomoção</TableCell>
 
               <TableCell> Data</TableCell>
 
@@ -135,9 +133,7 @@ export function MoveTable() {
                 <TableCell />
                 <TableCell />
                 <TableCell />
-                <TableCell align="center">Nenhuma Movimentação</TableCell>
-                <TableCell />
-                <TableCell />
+                <TableCell align="center">Nenhum Agendamento</TableCell>
                 <TableCell />
                 <TableCell />
                 <TableCell />
@@ -189,7 +185,6 @@ const Lista = (props) => {
         <TableCell>{props.dados.origin}</TableCell>
         <TableCell>{props.dados.destiny}</TableCell>
         <TableCell>{props.dados.transport}</TableCell>
-        <TableCell>{props.dados.price}</TableCell>
         <TableCell>{moment(props.dados.date).format("DD/MM/YY")}</TableCell>
         <TableCell align="center">
           {moment(props.dados.hour).format("HH:mm")}

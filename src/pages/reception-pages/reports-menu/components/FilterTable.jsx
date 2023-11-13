@@ -17,15 +17,15 @@ import {
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 
-import { setPatientTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
-import { setCompanionTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
+import { setPatientTable } from "../../../../shared/redux/slices/ReportsMenuSlice.jsx";
+import { setCompanionTable } from "../../../../shared/redux/slices/ReportsMenuSlice.jsx";
 export function FilterTable(props) {
   const dispatch = useDispatch();
 
   const ListFilteredPatients = async (e) => {
     e.preventDefault();
     await ApiServer.post(
-      "/filter-patients",
+      "/list-bypatient-filter",
       {
         religion: "",
         county: e.target.municipio.value,
@@ -47,7 +47,7 @@ export function FilterTable(props) {
   const ListFilteredCompanions = async (e) => {
     e.preventDefault();
     await ApiServer.post(
-      "/filter-companions",
+      "/list-bycompanion-filter",
       {
         religion: "",
         county: e.target.municipio.value,

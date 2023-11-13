@@ -1,8 +1,8 @@
 import {
   removeImageMultUrls,
   setImageUrl
-} from "../../../redux/slices/camera-file-slice/CameraFileSlice";
-import { setImageMultUrls } from "../../../redux/slices/camera-file-slice/CameraFileSlice";
+} from "../../../redux/slices/CameraFileSlice";
+import { setImageMultUrls } from "../../../redux/slices/CameraFileSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 

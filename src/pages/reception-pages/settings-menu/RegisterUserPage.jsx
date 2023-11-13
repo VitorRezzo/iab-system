@@ -1,7 +1,7 @@
 import React from "react";
-import { Container, Box, TextField, Button } from "@mui/material";
+import { Paper, Box, TextField, Button } from "@mui/material";
 import ApiServer from "../../../services/ApiServer.js";
-
+import BackgroundPages from "../../../assets/img/BackgroundPages.svg";
 export function RegisterUserPage() {
   const Cadastrar = async (e) => {
     e.preventDefault();
@@ -20,14 +20,12 @@ export function RegisterUserPage() {
   };
 
   return (
-    <Container
+    <Paper
+      elevation={5}
       sx={{
-        display: "flex",
-        marginTop: "8%",
-        flexDirection: "column",
-        alignItems: "center",
-        height: "90vh",
-        width: "90vw"
+        backgroundImage: `url(${BackgroundPages})`,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat"
       }}
     >
       <Box
@@ -56,6 +54,6 @@ export function RegisterUserPage() {
           </Button>
         </Box>
       </Box>
-    </Container>
+    </Paper>
   );
 }

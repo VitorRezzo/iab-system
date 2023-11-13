@@ -9,10 +9,10 @@ export function SideBarMenu(props) {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    props.formRef.current?.submitForm();
+    props.formRef?.current?.submitForm();
   };
   const handleNewPage = () => {
-    navigate(`/cadastro/paciente/${props.typePage}`);
+    navigate(`/cadastro/${props.typePage}/${props.idPage}`);
     navigate(0);
   };
 
@@ -51,15 +51,20 @@ export function SideBarMenu(props) {
         >
           Salvar
         </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={handleNewPage}
-          sx={{ width: "95%", color: "#fff", fontSize: "0.9rem" }}
-          startIcon={<InsertDriveFileOutlinedIcon />}
-        >
-          Novo
-        </Button>
+        {props.typePage !== "acompanhante" ? (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              handleNewPage();
+            }}
+            sx={{ width: "95%", color: "#fff", fontSize: "0.9rem" }}
+            startIcon={<InsertDriveFileOutlinedIcon />}
+          >
+            Novo
+          </Button>
+        ) : null}
+
         <IconButton sx={{ marginTop: "80%", color: "#fff" }}>
           <KeyboardBackspaceOutlinedIcon />
         </IconButton>

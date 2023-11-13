@@ -56,40 +56,43 @@ const theme = createTheme({
     },
     h4: {
       fontFamily: ["Nunito-Light"],
-      fontSize: 18
+      fontSize: 18,
+      color: "#085A8C"
     },
     h5: {
       fontFamily: ["Nunito-Light"],
-      fontSize: 14
+      fontSize: 14,
+      color: "#085A8C"
     },
     p: {
       fontFamily: ["Nunito-Light"],
       fontSize: 10
     },
+
     button: {
       fontSize: 12,
-      "@media(max-width : 1300px )": {
-        fontSize: 11
-      },
+      color: "white",
       "@media(max-width : 510px )": {
         fontSize: 10
       }
     }
   },
+
   components: {
     MuiTableCell: {
       styleOverrides: {
         root: {
-          fontSize: "12px",
+          fontSize: "0.9rem",
           whiteSpace: "nowrap",
           overFlow: "hidden",
           textOverflow: "ellipsis",
           "@media(max-width : 400px)": {
-            fontSize: 10
+            fontSize: "0.4rem"
           }
         }
       }
     },
+
     MuiInput: {
       styleOverrides: {
         root: {

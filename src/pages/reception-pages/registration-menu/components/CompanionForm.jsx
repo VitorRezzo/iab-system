@@ -42,13 +42,17 @@ import { useParams } from "react-router-dom";
 import { useAlertMessageContext } from "../../../../shared/context/AlertMessageContext";
 
 import { CameraFileMenu } from "../../../../shared/components/reception-components/camera-file-menu/CameraFileMenu";
-import { setImageMultUrls } from "../../../../shared/redux/slices/camera-file-slice/CameraFileSlice";
+import { setImageMultUrls } from "../../../../shared/redux/slices/CameraFileSlice.jsx";
 
-import { useDispatch, useSelector } from "react-redux";
 import UploadImageFile from "../../../../shared/feature/UploadImageFile";
+
 import { ButtonsSaveDelete } from "./ButtonsSaveDelete.jsx";
+
 import { DialogUI } from "./DialogUIForm.jsx";
-import { setDataCompanionForm } from "../../../../shared/redux/slices/camera-file-slice/CompanionFormSlice.jsx";
+
+import { setDataCompanionForm } from "../../../../shared/redux/slices/CompanionFormSlice.jsx";
+import { useDispatch, useSelector } from "react-redux";
+
 export function CompanionForm(props) {
   const { AlertMessage, setMessageAlert, setOpenMessageAlert, setTypeAlert } =
     useAlertMessageContext();
@@ -57,42 +61,36 @@ export function CompanionForm(props) {
   const [ageP, setAgeP] = useState(0);
   const { idPatient } = useParams();
   const formRef = useRef(null);
+  const ScrollRef = useRef(null);
   const dataImage = useSelector((state) => state.cameraFileMenu);
 
   const dispatch = useDispatch();
 
   useEffect(async () => {
     if (idPatient !== ":idPatient" && props.state === "save") {
-      const response = await ApiServer.post(
-        `/get-patients-byid/${idPatient}`,
-        null,
-        {
-          headers: { "x-acess-token": Cookies.get(process.env.REACT_APP_TOKEN) }
-        }
-      ).then((response) => {
-        return response.data.Companions[props.position];
-      });
-
       dispatch(
         setImageMultUrls(
-          response?.Avatar?.url !== undefined || response?.Avatar?.url !== null
-            ? `${process.env.REACT_APP_BACKEND}/files/${response?.Avatar?.url}`
+          props.datasCompanion.Avatare?.url !== null
+            ? `${process.env.REACT_APP_BACKEND}/files/${props.datasCompanion?.Avatare?.url}`
             : ""
         )
       );
 
-      const datasCompanion = {
-        ...response,
-        status: response?.Status.status,
-        kinship: response?.Patients_Companions.kinship,
-        state: response?.Address.state,
-        county: response?.Address.county,
-        district: response?.Address.district,
-        street: response?.Address.street
+      const datasCompanions = {
+        ...props.datasCompanion,
+        status: props.datasCompanion?.Status.status,
+        kinship: props.kinship,
+        state: props.datasCompanion?.Address.state,
+        county: props.datasCompanion?.Address.county,
+        district: props.datasCompanion?.Address.district,
+        street: props.datasCompanion?.Address.street
       };
 
-      dispatch(setDataCompanionForm(datasCompanion));
-      formRef.current?.setData(datasCompanion);
+      dispatch(setDataCompanionForm(datasCompanions));
+      formRef.current?.setData(datasCompanions);
+    }
+    if (props.state === "new") {
+      window.scrollTo({ top: ScrollRef.current.offsetTop, behavior: "smooth" });
     }
   }, [idPatient]);
 
@@ -124,7 +122,7 @@ export function CompanionForm(props) {
     await ApiServer.post(
       "/associate-companion-patient",
       {
-        kinship: data.kinship,
+        kinship: formRef.current.getData().kinship,
         PatientId: idPatient,
         id: idCompanion
       },
@@ -133,16 +131,15 @@ export function CompanionForm(props) {
       }
     )
       .then((res) => {
-        dispatch(setDataCompanionForm(dataform));
+        dispatch(setDataCompanionForm(data));
         setOpenMessageAlert(true);
         setMessageAlert(res.data.message);
         setTypeAlert("success");
       })
       .catch((error) => {
         setOpenMessageAlert(true);
-        setMessageAlert(error.response.data.message);
+        setMessageAlert(error.response?.data.message);
         setTypeAlert("warning");
-        console.log(error.response);
       });
   };
 
@@ -230,9 +227,8 @@ export function CompanionForm(props) {
 
   return (
     <Box
+      ref={ScrollRef}
       sx={{
-        padding: "1%",
-        marginTop: "8%",
         width: "90%"
       }}
     >

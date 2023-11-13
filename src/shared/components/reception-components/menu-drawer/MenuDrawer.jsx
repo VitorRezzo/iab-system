@@ -1,22 +1,8 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Avatar from "@mui/material/Avatar";
-import LogoutIcon from "@mui/icons-material/Logout";
-import IconButton from "@mui/material/IconButton";
-import Collapse from "@mui/material/Collapse";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import PersonIcon from "@mui/icons-material/Person";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
-import MenuOpenIcon from "@mui/icons-material/MenuOpen";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import ListItemText from "@mui/material/ListItemText";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
 import FeedIcon from "@mui/icons-material/Feed";
@@ -24,36 +10,37 @@ import InfoIcon from "@mui/icons-material/Info";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import NavigationAco from "./NavigationAco.js";
-import { useNavigate } from "react-router-dom";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
+import MenuIcon from "@mui/icons-material/Menu";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import ContentPasteIcon from "@mui/icons-material/ContentPaste";
+import {
+  Grid,
+  Drawer,
+  Box,
+  List,
+  Divider,
+  IconButton,
+  Collapse
+} from "@mui/material";
+import { NavLink } from "react-router-dom";
 import Mensageiro from "./Mensageiro.jsx";
-import Cookies from "js-cookie";
 import BackgroundMenu from "../../../../assets/img/BackgroundMenu.svg";
-import { useAutenticaUser } from "../../../context/AutenticaUser.jsx";
-import { Grid, Tooltip } from "@mui/material";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { MenuHeader } from "./MenuHeader.jsx";
+import { ListMenuDrawer } from "./ListMenuDrawer.jsx";
+
 export function MenuDrawer({ children }) {
   const theme = useTheme();
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const SIZEDRAWER = 240;
-  const navigate = useNavigate();
-  const [drawerWidth, setDraweWidth] = useState(SIZEDRAWER);
-  const [bntopen, setBntOpen] = useState(0);
-  const { userLog } = useAutenticaUser();
 
-  const handlerButtonClick = (value) => {
-    switch (value) {
-      case 1:
-        setBntOpen(bntopen ? null : value);
-        break;
-      case 3:
-        setBntOpen(bntopen ? null : value);
-        break;
-      default:
-        setBntOpen(0);
-        break;
-    }
+  const [drawerWidth, setDraweWidth] = useState(SIZEDRAWER);
+  const [bntopen, setBntOpen] = useState(null);
+
+  const handleButtonClick = (value) => {
+    setBntOpen(bntopen ? null : value);
   };
 
   const handleDrawerOpen = () => {
@@ -62,11 +49,6 @@ export function MenuDrawer({ children }) {
 
   const handleDrawerClose = () => {
     setDraweWidth(55);
-  };
-
-  const logoutUsers = () => {
-    Cookies.remove(process.env.REACT_APP_TOKEN, { path: "" });
-    navigate("/");
   };
 
   return (
@@ -79,6 +61,7 @@ export function MenuDrawer({ children }) {
           sx={{
             "& .MuiDrawer-paper": {
               width: drawerWidth,
+              transition: "width .35s ease-in-out",
               overflow: "hidden",
               backgroundImage: `url(${BackgroundMenu})`,
               backgroundSize: "cover",
@@ -89,36 +72,39 @@ export function MenuDrawer({ children }) {
           anchor="left"
           open={true}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            sx={{
+              display: "grid",
+              placeContent: drawerWidth === SIZEDRAWER ? "flex-end" : "center"
+            }}
+          >
             <IconButton
               onClick={() =>
-                drawerWidth == SIZEDRAWER
+                drawerWidth === SIZEDRAWER
                   ? handleDrawerClose()
                   : handleDrawerOpen()
               }
             >
-              <MenuOpenIcon />
+              {drawerWidth === SIZEDRAWER ? <MenuOpenIcon /> : <MenuIcon />}
             </IconButton>
           </Box>
           <Divider />
-          <List
-            sx={{
-              color: "#FFFF"
-            }}
-          >
-            <ListItem button onClick={() => NavigationAco(0, navigate)}>
-              <ListItemIcon>
-                <DashboardIcon sx={{ color: "#0066FC" }} />
-              </ListItemIcon>
-              <ListItemText primary={open ? "Dashboard" : null} />
-            </ListItem>
-            <ListItem button onClick={() => handlerButtonClick(1)}>
-              <ListItemIcon>
-                <ContactPageIcon sx={{ color: "#02E5B4" }} />
-              </ListItemIcon>
-              <ListItemText primary={"Cadastro"} />
-              {bntopen === 1 ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
+          <List>
+            <ListMenuDrawer
+              text="Dashboard"
+              component={NavLink}
+              to={"/Acolhimento_dashboard"}
+              startIcon={<DashboardIcon sx={{ color: "#0066FC" }} />}
+            />
+
+            <ListMenuDrawer
+              text="Cadastro"
+              action={() => {
+                handleButtonClick(1);
+              }}
+              startIcon={<ContactPageIcon sx={{ color: "#02E5B4" }} />}
+              endIcon={bntopen === 1 ? <ExpandLess /> : <ExpandMore />}
+            />
             <Collapse in={bntopen === 1} timeout="auto">
               <List
                 sx={{
@@ -127,40 +113,48 @@ export function MenuDrawer({ children }) {
                 component="div"
                 disablePadding
               >
-                <ListItem button onClick={() => NavigationAco(1, navigate)}>
-                  <ListItemIcon>
-                    <PersonIcon sx={{ color: "#092b5a" }} />
-                  </ListItemIcon>
-                  <ListItemText primary={"Paciente"} />
-                </ListItem>
-                <ListItem button onClick={() => NavigationAco(3, navigate)}>
-                  <ListItemIcon>
-                    <SyncAltIcon sx={{ color: "#092b5a" }} />
-                  </ListItemIcon>
-                  <ListItemText primary={"Movimentação"} />
-                </ListItem>
+                <ListMenuDrawer
+                  text="Paciente"
+                  component={NavLink}
+                  to={"/cadastro/paciente/:idPatient"}
+                  startIcon={<PersonIcon sx={{ color: "#092b5a" }} />}
+                />
+                <ListMenuDrawer
+                  text="Agendamentos"
+                  component={NavLink}
+                  to={"/cadastro/agendamentos"}
+                  startIcon={<EventNoteIcon sx={{ color: "#092b5a" }} />}
+                />
+                <ListMenuDrawer
+                  text="Movimentação"
+                  component={NavLink}
+                  to={"/cadastro/movimentos/:idMove"}
+                  startIcon={<SyncAltIcon sx={{ color: "#092b5a" }} />}
+                />
               </List>
             </Collapse>
-            <ListItem button onClick={() => NavigationAco(4, navigate)}>
-              <ListItemIcon>
-                <FeedIcon sx={{ color: "#F2485B" }} />
-              </ListItemIcon>
-              <ListItemText primary={"Relatório"} />
-            </ListItem>
-            <ListItem button onClick={() => NavigationAco(5, navigate)}>
-              <ListItemIcon>
-                <AssessmentIcon sx={{ color: "#F38900" }} />
-              </ListItemIcon>
-              <ListItemText primary={"Gráficos"} />
-            </ListItem>
-            <ListItem button onClick={() => handlerButtonClick(3)}>
-              <ListItemIcon>
-                <SettingsIcon sx={{ color: "#383939" }} />
-              </ListItemIcon>
-              <ListItemText primary={"Configuração"} />
-              {bntopen === 3 ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={bntopen === 3} timeout="auto">
+
+            <ListMenuDrawer
+              text="Relatórios"
+              component={NavLink}
+              to={"/relatorios"}
+              startIcon={<FeedIcon sx={{ color: "#F2485B" }} />}
+            />
+            <ListMenuDrawer
+              text="Gráficos"
+              component={NavLink}
+              to={"/graficos"}
+              startIcon={<AssessmentIcon sx={{ color: "#F38900" }} />}
+            />
+            <ListMenuDrawer
+              text="Configurações"
+              action={() => {
+                handleButtonClick(2);
+              }}
+              startIcon={<SettingsIcon sx={{ color: "#383939" }} />}
+              endIcon={bntopen === 2 ? <ExpandLess /> : <ExpandMore />}
+            />
+            <Collapse in={bntopen === 2} timeout="auto">
               <List
                 sx={{
                   background: "#2176e0"
@@ -168,26 +162,28 @@ export function MenuDrawer({ children }) {
                 component="div"
                 disablePadding
               >
-                <ListItem button>
-                  <ListItemIcon>
-                    <ManageAccountsIcon sx={{ color: "#092b5a" }} />
-                  </ListItemIcon>
-                  <ListItemText primary={"Usuário"} />
-                </ListItem>
-                <ListItem button>
-                  <ListItemIcon>
-                    <SettingsSuggestIcon sx={{ color: "#092b5a" }} />
-                  </ListItemIcon>
-                  <ListItemText primary={"Tema"} />
-                </ListItem>
+                <ListMenuDrawer
+                  text="Usuários"
+                  component={NavLink}
+                  to={"/configura/usuarios"}
+                  startIcon={<ManageAccountsIcon sx={{ color: "#092b5a" }} />}
+                />
+
+                <ListMenuDrawer
+                  text="Formulários"
+                  component={NavLink}
+                  to={"#"}
+                  startIcon={<ContentPasteIcon sx={{ color: "#092b5a" }} />}
+                />
               </List>
             </Collapse>
-            <ListItem button>
-              <ListItemIcon>
-                <InfoIcon sx={{ color: "#7D6B7D" }} />
-              </ListItemIcon>
-              <ListItemText primary={"Sobre"} />
-            </ListItem>
+
+            <ListMenuDrawer
+              text="Sobre"
+              component={NavLink}
+              to={"#"}
+              startIcon={<InfoIcon sx={{ color: "#7D6B7D" }} />}
+            />
           </List>
 
           <Divider />
@@ -201,52 +197,7 @@ export function MenuDrawer({ children }) {
       >
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                height: "25px",
-                width: "100%"
-              }}
-            >
-              <Typography color="primary" component={"span"} variant={"body2"}>
-                IAB ACOLHIMENTO
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flex: "1",
-                  flexDirection: "row",
-                  justifyContent: "space-around"
-                }}
-              >
-                <Typography
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center"
-                  }}
-                  component={"span"}
-                  variant={"body2"}
-                >
-                  <Avatar
-                    src={""}
-                    sx={{
-                      width: "28px",
-                      height: "28px",
-                      marginRight: "10%"
-                    }}
-                  />
-                  {userLog}
-                </Typography>
-
-                <IconButton onClick={() => logoutUsers()}>
-                  <Tooltip title="Sair">
-                    <LogoutIcon color="primary" />
-                  </Tooltip>
-                </IconButton>
-              </Box>
-            </Box>
+            <MenuHeader />
           </Grid>
           <Grid item xs={12}>
             <main style={{ paddingRight: "0.5%" }}>{children}</main>

@@ -27,7 +27,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useDebounce from "../../../../shared/hooks/useDebounce.jsx";
-import { setPatientTable } from "../../../../shared/redux/slices/camera-file-slice/ReportsMenuSlice.jsx";
+import { setPatientTable } from "../../../../shared/redux/slices/ReportsMenuSlice.jsx";
 import { useDispatch, useSelector } from "react-redux";
 
 export function TablePatient() {
@@ -62,7 +62,7 @@ export function TablePatient() {
         }
       }
     ).then((response) => {
-      dispatch(setPatientTable(response.data));
+      dispatch(setPatientTable(response.data.map));
     });
   };
 
@@ -199,27 +199,38 @@ function Linhas(patient) {
       <TableRow
         aria-label="expand row"
         onClick={() => {
-          isOpen ? handleClose() : listMovesP();
+          isOpen ? handleClose() : handleOpen();
         }}
         sx={{
           marginTop: "2%",
+          cursor: "pointer",
           backgroundColor: "#e6e8e3"
         }}
       >
         <TableCell>
           <Avatar
             src={
-              patient.data.Avatar.url !== null
-                ? `${process.env.REACT_APP_BACKEND}/files/${patient.data?.Avatar.url}`
+              patient.data?.Resident.Avatare?.url !== null
+                ? `${process.env.REACT_APP_BACKEND}/files/${patient.data?.Resident.Avatare.url}`
                 : ""
             }
-            sx={{ width: "60px", height: "60px" }}
+            sx={{
+              "& .MuiAvatar-img": {
+                padding: "15%",
+                backgroundColor: "white"
+              },
+              width: "80px",
+              height: "80px"
+            }}
+            alt="Avatar Pacientes"
           />
         </TableCell>
-        <TableCell sx={{ color: "#171430" }} scope="patient.data">
-          {patient.data.fullname}
+        <TableCell sx={{ color: "#171430" }}>
+          {patient.data.Resident.fullname}
         </TableCell>
-        <TableCell sx={{ color: "#171430" }}>{patient.data.cpf}</TableCell>
+        <TableCell sx={{ color: "#171430" }}>
+          {patient.data.Resident.cpf}
+        </TableCell>
         <TableCell sx={{ color: "#171430" }}>
           {patient.data.MedicalRecord.pathology}
         </TableCell>
@@ -230,26 +241,26 @@ function Linhas(patient) {
               paddingTop: "10%",
               color: "#353634",
               backgroundColor:
-                patient.data.Status.status == "Internado" ||
-                patient.data.Status.status == "Óbito"
+                patient.data.Resident.Status.status == "Internado" ||
+                patient.data.Resident.Status.status == "Óbito"
                   ? "#fa3e3e"
-                  : patient.data.Status.status == "Viagem"
+                  : patient.data.Resident.Status.status == "Viagem"
                   ? "#f3c75f"
-                  : patient.data.Status.status == "Curado"
+                  : patient.data.Resident.Status.status == "Curado"
                   ? "#80b3ff"
                   : "#a2fa1b",
               height: "30px",
               borderRadius: "5px"
             }}
           >
-            {patient.data.Status.status}
+            {patient.data.Resident.Status.status}
           </Box>
         </TableCell>
         <TableCell>
           <Tooltip title="Editar">
             <IconButton
               onClick={() => {
-                navigate(`/cadastro/paciente/${patient.data.id}`);
+                navigate(`/cadastro/paciente/${patient.data.Resident.id}`);
               }}
             >
               <NoteAltIcon />
@@ -261,19 +272,25 @@ function Linhas(patient) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h5" gutterBottom component="div">
-                Endereço
+              <Typography variant="h2" gutterBottom component="div">
+                Endereço:
               </Typography>
               <Box>
-                <Typography>Estado: {patient.data.Address.state}</Typography>
-
-                <Typography>
-                  Municipio: {patient.data.Address.county}
+                <Typography variant="h4">
+                  Estado: {patient.data.Resident.Address.state}
                 </Typography>
 
-                <Typography>Bairro: {patient.data.Address.district}</Typography>
+                <Typography variant="h4">
+                  Municipio: {patient.data.Resident.Address.county}
+                </Typography>
 
-                <Typography>Rua: {patient.data.Address.street}</Typography>
+                <Typography variant="h4">
+                  Bairro: {patient.data.Resident.Address.district}
+                </Typography>
+
+                <Typography variant="h4">
+                  Rua: {patient.data.Resident.Address.street}
+                </Typography>
               </Box>
             </Box>
             <Divider />
@@ -295,7 +312,7 @@ function Linhas(patient) {
                 </TableHead>
 
                 <TableHead>
-                  {listMovements.map((moviment) => (
+                  {/* {listMovements.map((moviment) => (
                     <TableRow key={moviment.id}>
                       <TableCell>{moviment.origin}</TableCell>
                       <TableCell>{moviment.destiny}</TableCell>
@@ -316,7 +333,7 @@ function Linhas(patient) {
                         {moment(moviment.hour).format("HH:mm")}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                 </TableHead>
 
                 <TableBody>
